@@ -103,6 +103,21 @@ The remote AI can propose intent. It must never directly invoke Siemens Openness
 
 The Engineer-PC runtime remains deterministic and treats remote requests as untrusted input.
 
+## MCP tools
+
+The host advertises tools through `tools/list`; which ones appear depends on deployment configuration (see the "Available when" column). Every tool requires the authenticated principal to hold the listed role and scope — there is no anonymous or partially-authorized access. Full JSON shapes and worked examples are in `docs/mcp/protocol.md`.
+
+| Tool | Purpose | Requires | Available when | Touches TIA? |
+|---|---|---|---|---|
+| `plan_create_block` | Validates a typed `CreateBlock` intent (name, block type, language, interface, optional controller), evaluates it against policy, and — if allowed — creates a transaction in the `AwaitingApproval` state with a deterministic operation hash. This is the entry point to every write; it never executes anything itself. | `Engineer` role, `engineering.plan` scope | Always | No |
+| `preview_scl_block` | Deterministically renders and validates the constrained SCL source text (`FUNCTION`/`FUNCTION_BLOCK` … `END_FUNCTION`/`END_FUNCTION_BLOCK`) for a `Function`/`FunctionBlock` intent with `language: "Scl"`. Same rendering logic `execute_create_block` uses internally. Read-only — no transaction, no TIA call. | `Engineer` role, `engineering.plan` scope | Always | No |
+| `get_project_context` | Reads the current snapshot (`projectId` + a content-derived `snapshotHash`) of the deployment-configured TIA V19 project, for stale-context detection before planning or continuing a paginated catalog read. | `Engineer` role, `engineering.read` scope | `TiaV19Worker:Enabled=true` | Yes (read-only) |
+| `get_block_catalog` | Reads a paginated, read-only catalog of PLC blocks (controller name, block name, namespace, number, programming language) from the configured project. Bounded to 500 blocks per page; a changed project snapshot forces the client to restart from `startIndex: 0`. | `Engineer` role, `engineering.read` scope | `TiaV19Worker:Enabled=true` and `EnableBlockCatalogRead=true` | Yes (read-only) |
+| `approve_create_block` | Records human approval for a transaction that is `AwaitingApproval`, binding the approval to the authenticated identity (not a client-supplied value), the transaction ID, the operation hash, the project snapshot hash, and an expiration. Any mismatch — including a stale snapshot — invalidates the approval instead of transitioning the transaction. | `Engineer` role, `engineering.execute` scope | `TiaV19Worker:Enabled=true` and `EnableBlockWrite=true` | No |
+| `execute_create_block` | Executes an `Approved` transaction: re-plans the original operation and refuses to proceed unless the recomputed hash still matches what was approved, then — for the constrained `Scl` `Function`/`FunctionBlock` surface — renders the SCL source and writes the block to the named controller via TIA Openness (`GenerateBlocksFromSource`), returning the updated project snapshot. This is the only tool that can change a real TIA project. | `Engineer` role, `engineering.execute` scope | `TiaV19Worker:Enabled=true` and `EnableBlockWrite=true` | **Yes (write)** |
+
+`approve_create_block` and `execute_create_block` both take the full `EngineeringTransaction` object returned by `plan_create_block` (and, for approval, `approve_create_block`'s own response) — there is no server-side transaction store, so the caller round-trips it. See "Dev console" below for a tool that does this hand-off for you.
+
 ## Running and testing the MCP server
 
 ### Build
