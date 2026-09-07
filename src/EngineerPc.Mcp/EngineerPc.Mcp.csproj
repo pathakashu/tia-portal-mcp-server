@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\EngineerPc.Contracts\EngineerPc.Contracts.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Engine\EngineerPc.Engineering.Engine.csproj" />
+    <ProjectReference Include="..\EngineerPc.Security\EngineerPc.Security.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

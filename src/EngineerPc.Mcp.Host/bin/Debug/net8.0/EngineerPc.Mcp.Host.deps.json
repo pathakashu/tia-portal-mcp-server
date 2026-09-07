@@ -1,0 +1,212 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "EngineerPc.Mcp.Host/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Audit": "1.0.0",
+          "EngineerPc.Contracts": "1.0.0",
+          "EngineerPc.Engineering.Approvals": "1.0.0",
+          "EngineerPc.Engineering.Engine": "1.0.0",
+          "EngineerPc.Engineering.Ir": "1.0.0",
+          "EngineerPc.Engineering.Policy": "1.0.0",
+          "EngineerPc.Engineering.Transactions": "1.0.0",
+          "EngineerPc.Engineering.Validation": "1.0.0",
+          "EngineerPc.Mcp": "1.0.0",
+          "EngineerPc.Security": "1.0.0",
+          "EngineerPc.Tia.Abstractions": "1.0.0",
+          "EngineerPc.Tia.V18.Client": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Mcp.Host.dll": {}
+        }
+      },
+      "EngineerPc.Audit/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0",
+          "EngineerPc.Security": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Audit.dll": {}
+        }
+      },
+      "EngineerPc.Contracts/1.0.0": {
+        "runtime": {
+          "EngineerPc.Contracts.dll": {}
+        }
+      },
+      "EngineerPc.Engineering.Approvals/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0",
+          "EngineerPc.Engineering.Transactions": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Engineering.Approvals.dll": {}
+        }
+      },
+      "EngineerPc.Engineering.Engine/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Audit": "1.0.0",
+          "EngineerPc.Engineering.Approvals": "1.0.0",
+          "EngineerPc.Engineering.Ir": "1.0.0",
+          "EngineerPc.Engineering.Policy": "1.0.0",
+          "EngineerPc.Engineering.Transactions": "1.0.0",
+          "EngineerPc.Engineering.Validation": "1.0.0",
+          "EngineerPc.Tia.Abstractions": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Engineering.Engine.dll": {}
+        }
+      },
+      "EngineerPc.Engineering.Ir/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Engineering.Ir.dll": {}
+        }
+      },
+      "EngineerPc.Engineering.Policy/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Engineering.Ir": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Engineering.Policy.dll": {}
+        }
+      },
+      "EngineerPc.Engineering.Transactions/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Engineering.Transactions.dll": {}
+        }
+      },
+      "EngineerPc.Engineering.Validation/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Engineering.Ir": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Engineering.Validation.dll": {}
+        }
+      },
+      "EngineerPc.Mcp/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0",
+          "EngineerPc.Engineering.Engine": "1.0.0",
+          "EngineerPc.Security": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Mcp.dll": {}
+        }
+      },
+      "EngineerPc.Security/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Security.dll": {}
+        }
+      },
+      "EngineerPc.Tia.Abstractions/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0",
+          "EngineerPc.Engineering.Ir": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Tia.Abstractions.dll": {}
+        }
+      },
+      "EngineerPc.Tia.V18.Client/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Tia.Abstractions": "1.0.0",
+          "EngineerPc.Tia.V18.Protocol": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Tia.V18.Client.dll": {}
+        }
+      },
+      "EngineerPc.Tia.V18.Protocol/1.0.0": {
+        "runtime": {
+          "EngineerPc.Tia.V18.Protocol.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EngineerPc.Mcp.Host/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Audit/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Engineering.Approvals/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Engineering.Engine/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Engineering.Ir/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Engineering.Policy/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Engineering.Transactions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Engineering.Validation/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Mcp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Security/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Tia.Abstractions/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Tia.V18.Client/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Tia.V18.Protocol/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

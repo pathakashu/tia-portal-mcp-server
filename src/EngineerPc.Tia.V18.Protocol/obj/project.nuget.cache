@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "j1uIYqDXpYU=",
+  "success": true,
+  "projectFilePath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Tia.V18.Protocol\\EngineerPc.Tia.V18.Protocol.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\inapath\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\inapath\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

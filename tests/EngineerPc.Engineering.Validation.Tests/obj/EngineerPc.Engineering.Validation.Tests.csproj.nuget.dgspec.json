@@ -1,0 +1,270 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\git\\tia-portal-mcp-server\\tests\\EngineerPc.Engineering.Validation.Tests\\EngineerPc.Engineering.Validation.Tests.csproj": {}
+  },
+  "projects": {
+    "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\EngineerPc.Contracts.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\EngineerPc.Contracts.csproj",
+        "projectName": "EngineerPc.Contracts",
+        "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\EngineerPc.Contracts.csproj",
+        "packagesPath": "C:\\Users\\inapath\\.nuget\\packages\\",
+        "outputPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\inapath\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.319/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Ir\\EngineerPc.Engineering.Ir.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Ir\\EngineerPc.Engineering.Ir.csproj",
+        "projectName": "EngineerPc.Engineering.Ir",
+        "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Ir\\EngineerPc.Engineering.Ir.csproj",
+        "packagesPath": "C:\\Users\\inapath\\.nuget\\packages\\",
+        "outputPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Ir\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\inapath\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\EngineerPc.Contracts.csproj": {
+                "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\EngineerPc.Contracts.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.319/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Validation\\EngineerPc.Engineering.Validation.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Validation\\EngineerPc.Engineering.Validation.csproj",
+        "projectName": "EngineerPc.Engineering.Validation",
+        "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Validation\\EngineerPc.Engineering.Validation.csproj",
+        "packagesPath": "C:\\Users\\inapath\\.nuget\\packages\\",
+        "outputPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Validation\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\inapath\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Ir\\EngineerPc.Engineering.Ir.csproj": {
+                "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Ir\\EngineerPc.Engineering.Ir.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.319/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\git\\tia-portal-mcp-server\\tests\\EngineerPc.Engineering.Validation.Tests\\EngineerPc.Engineering.Validation.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\git\\tia-portal-mcp-server\\tests\\EngineerPc.Engineering.Validation.Tests\\EngineerPc.Engineering.Validation.Tests.csproj",
+        "projectName": "EngineerPc.Engineering.Validation.Tests",
+        "projectPath": "C:\\git\\tia-portal-mcp-server\\tests\\EngineerPc.Engineering.Validation.Tests\\EngineerPc.Engineering.Validation.Tests.csproj",
+        "packagesPath": "C:\\Users\\inapath\\.nuget\\packages\\",
+        "outputPath": "C:\\git\\tia-portal-mcp-server\\tests\\EngineerPc.Engineering.Validation.Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\inapath\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Validation\\EngineerPc.Engineering.Validation.csproj": {
+                "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Engineering.Validation\\EngineerPc.Engineering.Validation.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.8.0, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.5.3, )"
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.5.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.319/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

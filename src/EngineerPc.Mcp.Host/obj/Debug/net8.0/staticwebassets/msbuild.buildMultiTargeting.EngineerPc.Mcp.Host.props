@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\EngineerPc.Mcp.Host.props" />
+</Project>

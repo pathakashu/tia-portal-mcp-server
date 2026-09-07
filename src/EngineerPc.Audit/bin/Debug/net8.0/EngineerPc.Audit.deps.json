@@ -1,0 +1,50 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "EngineerPc.Audit/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0",
+          "EngineerPc.Security": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Audit.dll": {}
+        }
+      },
+      "EngineerPc.Contracts/1.0.0": {
+        "runtime": {
+          "EngineerPc.Contracts.dll": {}
+        }
+      },
+      "EngineerPc.Security/1.0.0": {
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.Security.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EngineerPc.Audit/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Contracts/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.Security/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

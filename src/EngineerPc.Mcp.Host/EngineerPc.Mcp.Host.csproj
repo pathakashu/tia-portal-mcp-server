@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\EngineerPc.Audit\EngineerPc.Audit.csproj" />
+    <ProjectReference Include="..\EngineerPc.Contracts\EngineerPc.Contracts.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Approvals\EngineerPc.Engineering.Approvals.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Engine\EngineerPc.Engineering.Engine.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Ir\EngineerPc.Engineering.Ir.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Policy\EngineerPc.Engineering.Policy.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Transactions\EngineerPc.Engineering.Transactions.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Validation\EngineerPc.Engineering.Validation.csproj" />
+    <ProjectReference Include="..\EngineerPc.Mcp\EngineerPc.Mcp.csproj" />
+    <ProjectReference Include="..\EngineerPc.Security\EngineerPc.Security.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.Abstractions\EngineerPc.Tia.Abstractions.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.V18.Client\EngineerPc.Tia.V18.Client.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

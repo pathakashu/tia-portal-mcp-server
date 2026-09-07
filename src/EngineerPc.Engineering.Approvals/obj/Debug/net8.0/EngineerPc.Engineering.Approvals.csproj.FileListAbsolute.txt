@@ -1,0 +1,17 @@
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\bin\Debug\net8.0\EngineerPc.Engineering.Approvals.deps.json
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\bin\Debug\net8.0\EngineerPc.Engineering.Approvals.dll
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\bin\Debug\net8.0\EngineerPc.Engineering.Approvals.pdb
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\bin\Debug\net8.0\EngineerPc.Contracts.dll
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\bin\Debug\net8.0\EngineerPc.Engineering.Transactions.dll
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\bin\Debug\net8.0\EngineerPc.Contracts.pdb
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\bin\Debug\net8.0\EngineerPc.Engineering.Transactions.pdb
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\EngineerPc.Engineering.Approvals.csproj.AssemblyReference.cache
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\EngineerPc.Engineering.Approvals.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\EngineerPc.Engineering.Approvals.AssemblyInfoInputs.cache
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\EngineerPc.Engineering.Approvals.AssemblyInfo.cs
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\EngineerPc.Engineering.Approvals.csproj.CoreCompileInputs.cache
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\Engineer.68595AC0.Up2Date
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\EngineerPc.Engineering.Approvals.dll
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\refint\EngineerPc.Engineering.Approvals.dll
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\EngineerPc.Engineering.Approvals.pdb
+C:\Users\inapath\Downloads\tia-eigen-clone-v18-copilot\tia-eigen-clone-v18-copilot\src\EngineerPc.Engineering.Approvals\obj\Debug\net8.0\ref\EngineerPc.Engineering.Approvals.dll

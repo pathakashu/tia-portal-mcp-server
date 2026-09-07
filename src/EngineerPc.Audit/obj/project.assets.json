@@ -1,0 +1,116 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "EngineerPc.Contracts/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/EngineerPc.Contracts.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/EngineerPc.Contracts.dll": {}
+        }
+      },
+      "EngineerPc.Security/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "EngineerPc.Contracts": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/EngineerPc.Security.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/EngineerPc.Security.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EngineerPc.Contracts/1.0.0": {
+      "type": "project",
+      "path": "../EngineerPc.Contracts/EngineerPc.Contracts.csproj",
+      "msbuildProject": "../EngineerPc.Contracts/EngineerPc.Contracts.csproj"
+    },
+    "EngineerPc.Security/1.0.0": {
+      "type": "project",
+      "path": "../EngineerPc.Security/EngineerPc.Security.csproj",
+      "msbuildProject": "../EngineerPc.Security/EngineerPc.Security.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "EngineerPc.Contracts >= 1.0.0",
+      "EngineerPc.Security >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\inapath\\.nuget\\packages\\": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Audit\\EngineerPc.Audit.csproj",
+      "projectName": "EngineerPc.Audit",
+      "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Audit\\EngineerPc.Audit.csproj",
+      "packagesPath": "C:\\Users\\inapath\\.nuget\\packages\\",
+      "outputPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Audit\\obj\\",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "C:\\Users\\inapath\\AppData\\Roaming\\NuGet\\NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\EngineerPc.Contracts.csproj": {
+              "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Contracts\\EngineerPc.Contracts.csproj"
+            },
+            "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Security\\EngineerPc.Security.csproj": {
+              "projectPath": "C:\\git\\tia-portal-mcp-server\\src\\EngineerPc.Security\\EngineerPc.Security.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.319/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}

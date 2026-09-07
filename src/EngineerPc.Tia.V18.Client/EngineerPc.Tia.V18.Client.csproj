@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EngineerPc.Tia.Abstractions\EngineerPc.Tia.Abstractions.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.V18.Protocol\EngineerPc.Tia.V18.Protocol.csproj" />
+  </ItemGroup>
+
+</Project>

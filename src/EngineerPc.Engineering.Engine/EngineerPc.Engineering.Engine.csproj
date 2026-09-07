@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\EngineerPc.Audit\EngineerPc.Audit.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Ir\EngineerPc.Engineering.Ir.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Validation\EngineerPc.Engineering.Validation.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Policy\EngineerPc.Engineering.Policy.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Approvals\EngineerPc.Engineering.Approvals.csproj" />
+    <ProjectReference Include="..\EngineerPc.Engineering.Transactions\EngineerPc.Engineering.Transactions.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.Abstractions\EngineerPc.Tia.Abstractions.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+</Project>

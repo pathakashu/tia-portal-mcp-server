@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "EngineerPc.ProjectGraph/1.0.0": {
+        "dependencies": {
+          "EngineerPc.ProjectModel": "1.0.0"
+        },
+        "runtime": {
+          "EngineerPc.ProjectGraph.dll": {}
+        }
+      },
+      "EngineerPc.ProjectModel/1.0.0": {
+        "runtime": {
+          "EngineerPc.ProjectModel.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "EngineerPc.ProjectGraph/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "EngineerPc.ProjectModel/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
