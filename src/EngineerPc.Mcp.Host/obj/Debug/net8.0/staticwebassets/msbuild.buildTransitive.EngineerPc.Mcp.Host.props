@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\EngineerPc.Mcp.Host.props" />
-</Project>

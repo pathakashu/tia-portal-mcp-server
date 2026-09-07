@@ -1,0 +1,28 @@
+# .NET build artifacts
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider / ReSharper
+.idea/
+*.DotSettings.user
+
+# Test results
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# NuGet
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+
+# OS files
+.DS_Store
+Thumbs.db
