@@ -173,16 +173,67 @@ public sealed class TiaV19WorkerClientTests : IDisposable
     }
 
     [Fact]
-    public async Task CreateBlockAsync_DoesNotDispatchAWriteToTheWorker()
+    public async Task CreateBlockAsync_WithoutControllerName_FailsWithoutDispatch()
     {
-        var transport = new ControlledWorkerTransport(request => Success(request, "project-1", "snapshot-1"));
+        var transport = new ControlledWorkerTransport(request => CreateBlockSuccess(request, "project-1", "snapshot-2"));
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
+
+        var result = await client.CreateBlockAsync(CreateOperation(controllerName: null), CancellationToken.None, "FUNCTION_BLOCK \"FB_Motor\"");
+
+        Assert.False(result.IsSuccess);
+        Assert.Contains("TIA V19 block creation requires the operation to declare a controller name.", result.Errors);
+        Assert.Empty(transport.Requests);
+    }
+
+    [Fact]
+    public async Task CreateBlockAsync_WithoutRenderedSource_FailsWithoutDispatch()
+    {
+        var transport = new ControlledWorkerTransport(request => CreateBlockSuccess(request, "project-1", "snapshot-2"));
         using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         var result = await client.CreateBlockAsync(CreateOperation(), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("TIA Portal V19 block creation is unavailable through the worker client.", result.Errors);
+        Assert.Contains(
+            "TIA V19 block creation only supports the constrained Scl Function/FunctionBlock source surface.",
+            result.Errors);
         Assert.Empty(transport.Requests);
+    }
+
+    [Fact]
+    public async Task CreateBlockAsync_WithMatchingWorkerResponse_ReturnsUpdatedContext()
+    {
+        var transport = new ControlledWorkerTransport(request => CreateBlockSuccess(request, "project-1", "snapshot-2"));
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
+
+        var result = await client.CreateBlockAsync(CreateOperation(), CancellationToken.None, "FUNCTION_BLOCK \"FB_Motor\"");
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(new ProjectContext("project-1", "snapshot-2"), result.UpdatedProjectContext);
+        var request = Assert.Single(transport.Requests);
+        Assert.Equal(TiaV19WorkerProtocol.CreateBlockMethod, request.Method);
+        Assert.Equal("PLC_1", request.CreateBlockControllerName);
+        Assert.Equal("FB_Motor", request.CreateBlockName);
+        Assert.Equal("FUNCTION_BLOCK \"FB_Motor\"", request.CreateBlockSourceText);
+        Assert.Equal("snapshot-1", request.CreateBlockExpectedSnapshotHash);
+    }
+
+    [Fact]
+    public async Task CreateBlockAsync_WithWorkerError_ReturnsFailureWithoutThrowing()
+    {
+        var transport = new ControlledWorkerTransport(request => JsonSerializer.Serialize(
+            new TiaV19CreateBlockResponse(
+                request.RequestId,
+                null,
+                null,
+                TiaV19CreateBlockErrorCode.BlockAlreadyExists,
+                "Block 'FB_Motor' already exists under controller 'PLC_1'.")));
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
+
+        var result = await client.CreateBlockAsync(CreateOperation(), CancellationToken.None, "FUNCTION_BLOCK \"FB_Motor\"");
+
+        Assert.False(result.IsSuccess);
+        Assert.Contains("Block 'FB_Motor' already exists under controller 'PLC_1'.", result.Errors);
     }
 
     [Fact]
@@ -216,14 +267,19 @@ public sealed class TiaV19WorkerClientTests : IDisposable
         new TiaV19ProjectContextResponse(request.RequestId, projectId, snapshotHash, null),
         new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
-    private static CreateBlockOperation CreateOperation() => new(
+    private static string CreateBlockSuccess(TiaV19WorkerRequest request, string projectId, string snapshotHash) => JsonSerializer.Serialize(
+        new TiaV19CreateBlockResponse(request.RequestId, projectId, snapshotHash, TiaV19CreateBlockErrorCode.None, null),
+        new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+    private static CreateBlockOperation CreateOperation(string? controllerName = "PLC_1") => new(
         Guid.NewGuid(),
         new ProjectContext("project-1", "snapshot-1"),
         "idempotency-key",
         "FB_Motor",
         BlockType.FunctionBlock,
         ProgrammingLanguage.Scl,
-        new BlockInterface([]));
+        new BlockInterface([]),
+        ControllerName: controllerName);
 
     private sealed class ControlledWorkerTransport(
         Func<TiaV19WorkerRequest, string> responseFactory,

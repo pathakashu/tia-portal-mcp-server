@@ -12,5 +12,7 @@ public enum McpTool
     PlanCreateBlock,
     PreviewSclBlock,
     GetProjectContext,
-    GetBlockCatalog
+    GetBlockCatalog,
+    ApproveCreateBlock,
+    ExecuteCreateBlock
 }

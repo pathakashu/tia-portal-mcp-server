@@ -83,6 +83,77 @@ public sealed class McpJsonRpcRequestProcessorTests
     }
 
     [Fact]
+    public void Process_EnabledBlockWriteTools_ExposesApproveAndExecuteTools()
+    {
+        var processor = CreateProcessor(out _, blockWriteEnabled: true);
+        var initialized = processor.Process(InitializeRequest(), Principal(), null, null);
+        processor.Process(
+            Notification("notifications/initialized"),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+
+        var listed = processor.Process(
+            Request("tools/list", new { }),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+
+        var responseJson = McpJsonRpcRequestProcessor.SerializeResponse(listed.Response!);
+        Assert.Contains("approve_create_block", responseJson);
+        Assert.Contains("execute_create_block", responseJson);
+    }
+
+    [Fact]
+    public void Process_EnabledBlockWriteTools_ApprovesThenExecutesCreateBlock()
+    {
+        var processor = CreateProcessor(out _, blockWriteEnabled: true);
+        var initialized = processor.Process(InitializeRequest(), Principal(), null, null);
+        processor.Process(
+            Notification("notifications/initialized"),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+        var operation = CreateOperation();
+
+        var planResult = processor.Process(
+            Request("tools/call", new { name = "plan_create_block", arguments = operation }),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+        using var planDocument = JsonDocument.Parse(McpJsonRpcRequestProcessor.SerializeResponse(planResult.Response!));
+        var transaction = planDocument.RootElement.GetProperty("result").GetProperty("structuredContent").GetProperty("transaction").Clone();
+
+        var approveResult = processor.Process(
+            Request("tools/call", new
+            {
+                name = "approve_create_block",
+                arguments = new { transaction, expiresAtUtc = DateTimeOffset.UtcNow.AddMinutes(5) }
+            }),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+        var approveJson = McpJsonRpcRequestProcessor.SerializeResponse(approveResult.Response!);
+        Assert.Contains("\"isError\":false", approveJson);
+        using var approveDocument = JsonDocument.Parse(approveJson);
+        var approvedTransaction = approveDocument.RootElement.GetProperty("result").GetProperty("structuredContent").GetProperty("transaction").Clone();
+
+        var executeResult = processor.Process(
+            Request("tools/call", new
+            {
+                name = "execute_create_block",
+                arguments = new { transaction = approvedTransaction, operation }
+            }),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+
+        var executeJson = McpJsonRpcRequestProcessor.SerializeResponse(executeResult.Response!);
+        Assert.Contains("\"isError\":false", executeJson);
+        Assert.Contains("\"isCommitted\":true", executeJson);
+    }
+
+    [Fact]
     public void Process_EnabledProjectContextTool_ReturnsConfiguredProjectContext()
     {
         var processor = CreateProcessor(out _, projectContextReadEnabled: true);
@@ -232,7 +303,8 @@ public sealed class McpJsonRpcRequestProcessorTests
     private static McpJsonRpcRequestProcessor CreateProcessor(
         out McpSessionManager sessionManager,
         bool projectContextReadEnabled = false,
-        bool blockCatalogReadEnabled = false)
+        bool blockCatalogReadEnabled = false,
+        bool blockWriteEnabled = false)
     {
         var timeProvider = TimeProvider.System;
         sessionManager = new McpSessionManager(timeProvider);
@@ -243,7 +315,7 @@ public sealed class McpJsonRpcRequestProcessorTests
             policy,
             new ApprovalService(),
             new TransactionStateMachine(),
-            new PlanningOnlyTiaAdapter());
+            new RecordingCreateBlockAdapter());
         return new McpJsonRpcRequestProcessor(
             sessionManager,
             new McpToolRouter(
@@ -257,19 +329,41 @@ public sealed class McpJsonRpcRequestProcessorTests
                         new AuthorizationRule("PlanCreateBlock", "Engineer", "engineering.plan"),
                         new AuthorizationRule("PreviewSclBlock", "Engineer", "engineering.plan"),
                         new AuthorizationRule("GetProjectContext", "Engineer", "engineering.read"),
-                        new AuthorizationRule("GetBlockCatalog", "Engineer", "engineering.read")
+                        new AuthorizationRule("GetBlockCatalog", "Engineer", "engineering.read"),
+                        new AuthorizationRule("ApproveCreateBlock", "Engineer", "engineering.execute"),
+                        new AuthorizationRule("ExecuteCreateBlock", "Engineer", "engineering.execute")
                     ],
                     new InMemorySecurityEventSink(),
                     timeProvider),
                 timeProvider),
             projectContextReadEnabled,
-            blockCatalogReadEnabled);
+            blockCatalogReadEnabled,
+            blockWriteEnabled);
     }
 
     private static AuthenticatedPrincipal Principal() => new(
         new AuthenticatedIdentity("developer", "localhost"),
         new HashSet<string>(["Engineer"], StringComparer.Ordinal),
-        new HashSet<string>(["engineering.plan", "engineering.read"], StringComparer.Ordinal));
+        new HashSet<string>(["engineering.plan", "engineering.read", "engineering.execute"], StringComparer.Ordinal));
+
+    private sealed class RecordingCreateBlockAdapter : ITiaAdapter
+    {
+        private int writeCount;
+
+        public Task<ProjectContext?> GetProjectContextAsync(string projectId, CancellationToken cancellationToken) =>
+            Task.FromResult<ProjectContext?>(new ProjectContext(projectId, "snapshot-1"));
+
+        public Task<TiaAdapterExecutionResult> CreateBlockAsync(
+            CreateBlockOperation operation,
+            CancellationToken cancellationToken,
+            string? sclSourceText = null)
+        {
+            writeCount++;
+            return Task.FromResult(new TiaAdapterExecutionResult(
+                new ProjectContext(operation.ProjectContext.ProjectId, $"snapshot-{writeCount + 1}"),
+                []));
+        }
+    }
 
     private sealed class StaticProjectContextReadService : IProjectContextReadService
     {

@@ -49,6 +49,7 @@ static object HandleRequest(
     {
         TiaV19WorkerProtocol.GetProjectContextMethod => adapter.ReadProjectContext(request.RequestId, request.ProjectId!),
         TiaV19WorkerProtocol.GetBlockCatalogMethod => ReadBlockCatalog(adapter, request),
+        TiaV19WorkerProtocol.CreateBlockMethod => CreateBlock(adapter, request),
         _ => new TiaV19ProjectContextResponse(request.RequestId, null, null, "Worker method is not supported.")
     };
 }
@@ -81,6 +82,30 @@ static TiaV19BlockCatalogResponse ReadBlockCatalog(TiaV19Adapter adapter, TiaV19
         startIndex,
         maximumBlockCount,
         request.BlockCatalogExpectedSnapshotHash);
+}
+
+static TiaV19CreateBlockResponse CreateBlock(TiaV19Adapter adapter, TiaV19WorkerRequest request)
+{
+    if (string.IsNullOrWhiteSpace(request.CreateBlockControllerName) ||
+        string.IsNullOrWhiteSpace(request.CreateBlockName) ||
+        string.IsNullOrWhiteSpace(request.CreateBlockSourceText) ||
+        string.IsNullOrWhiteSpace(request.CreateBlockExpectedSnapshotHash))
+    {
+        return new TiaV19CreateBlockResponse(
+            request.RequestId,
+            null,
+            null,
+            TiaV19CreateBlockErrorCode.None,
+            "Worker create-block parameters are invalid.");
+    }
+
+    return adapter.CreateBlock(
+        request.RequestId,
+        request.ProjectId!,
+        request.CreateBlockControllerName!,
+        request.CreateBlockName!,
+        request.CreateBlockSourceText!,
+        request.CreateBlockExpectedSnapshotHash!);
 }
 
 static string GetConfigurationPath(string[] arguments)

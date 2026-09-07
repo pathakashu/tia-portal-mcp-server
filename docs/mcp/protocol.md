@@ -91,4 +91,42 @@ When `TiaV19Worker:Enabled` and the separate default-off `TiaV19Worker:EnableBlo
 
 `startIndex` is optional and defaults to zero; clients continue a truncated response using its `nextStartIndex` value. Every continuation (`startIndex` greater than zero) must include `expectedSnapshotHash` from the preceding successful response. `maxBlocks` is optional, must be positive, and is capped at 500 by the Engineering Engine. The response contains the project ID, snapshot hash, `totalBlockCount`, `isTruncated`, optional `nextStartIndex`, and read-only block metadata: controller name, block name, namespace, number, and programming language. If the project snapshot has changed, the call returns an error requiring the client to restart from `startIndex: 0`; it never mixes pages from different snapshots. The engine records a scrubbed catalog-read outcome. The tool is omitted unless both deployment-controlled settings are enabled; it cannot select project, worker executable, or worker configuration paths, and it exposes no raw Siemens objects or mutation operations.
 
+When `TiaV19Worker:Enabled` and the separate default-off `TiaV19Worker:EnableBlockWrite` settings are both `true`, the server additionally advertises `approve_create_block` and `execute_create_block`. Both require the authenticated `Engineer` role and the `engineering.execute` scope. There is no server-side transaction store: the client round-trips the full `EngineeringTransaction` object returned by `plan_create_block` back into both calls.
+
+`approve_create_block` takes the transaction awaiting approval and an `expiresAtUtc`; the server derives the approval identity from the authenticated session, not from tool arguments, and returns the updated transaction or a rejection reason:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-id",
+  "method": "tools/call",
+  "params": {
+    "name": "approve_create_block",
+    "arguments": {
+      "transaction": { "...": "the transaction returned by plan_create_block" },
+      "expiresAtUtc": "2026-01-01T00:05:00Z"
+    }
+  }
+}
+```
+
+`execute_create_block` takes the now-approved transaction and the original operation. It re-plans the operation and rejects execution unless the recomputed operation hash still matches the approved transaction. For `Function`/`FunctionBlock` intents with `language: "Scl"`, the engine deterministically re-renders the same constrained SCL source used by `preview_scl_block` and passes it to the configured V19 adapter, which writes the block to the named controller and returns the updated project snapshot:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "request-id",
+  "method": "tools/call",
+  "params": {
+    "name": "execute_create_block",
+    "arguments": {
+      "transaction": { "...": "the approved transaction" },
+      "operation": { "...": "the same operation submitted to plan_create_block, including controllerName" }
+    }
+  }
+}
+```
+
+Both tools are omitted unless both deployment-controlled settings are enabled. Neither accepts a project file path, worker executable path, or raw Siemens object from tool arguments.
+
 The server derives internal request and correlation IDs from the authenticated session and JSON-RPC ID. It does not accept transport identity, roles, scopes, session state, or correlation IDs from tool arguments. MCP is not permitted to bypass Engineering Engine boundaries.

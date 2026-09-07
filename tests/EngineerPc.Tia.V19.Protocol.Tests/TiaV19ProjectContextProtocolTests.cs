@@ -45,6 +45,18 @@ public sealed class TiaV19ProjectContextProtocolTests
     }
 
     [Fact]
+    public void ProjectSnapshot_AcceptsEmptyVersion()
+    {
+        // Siemens.Engineering.Project.Version is a non-null string that is empty for
+        // some real V19 projects; the snapshot hash must still be computable.
+        var timestamp = new DateTime(2026, 9, 7, 12, 0, 0, DateTimeKind.Utc);
+
+        var snapshot = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 128, string.Empty);
+
+        Assert.False(string.IsNullOrEmpty(snapshot));
+    }
+
+    [Fact]
     public void WorkerRequest_ContainsOnlyProtocolMetadataConfiguredProjectIdAndCatalogPageParameters()
     {
         var request = new TiaV19WorkerRequest("1.0", "request-1", "get_block_catalog", "project-1", 100, 25);

@@ -14,7 +14,8 @@ public sealed class PlanningOnlyTiaAdapter : ITiaAdapter
 
     public Task<TiaAdapterExecutionResult> CreateBlockAsync(
         CreateBlockOperation operation,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? sclSourceText = null)
     {
         cancellationToken.ThrowIfCancellationRequested();
         return Task.FromResult(new TiaAdapterExecutionResult(

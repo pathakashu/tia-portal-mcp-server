@@ -122,7 +122,16 @@ public sealed class CreateBlockWorkflow : ICreateBlockWorkflow
 
         var executingTransaction = stateMachine.Transition(transaction, TransactionState.Executing);
         Record(operation, executingTransaction, EngineeringAuditEventType.ExecutionStarted, null, "Execution started.", timeProvider.GetUtcNow());
-        var execution = await tiaAdapter.CreateBlockAsync(operation, cancellationToken);
+
+        string? sclSourceText = null;
+        if (operation.Language == ProgrammingLanguage.Scl &&
+            operation.BlockType is BlockType.Function or BlockType.FunctionBlock &&
+            SclSourceRenderer.Validate(operation).Count == 0)
+        {
+            sclSourceText = SclSourceRenderer.Render(operation);
+        }
+
+        var execution = await tiaAdapter.CreateBlockAsync(operation, cancellationToken, sclSourceText);
 
         if (!execution.IsSuccess)
         {

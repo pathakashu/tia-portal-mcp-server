@@ -10,7 +10,8 @@ public sealed record CreateBlockOperation(
     BlockType BlockType,
     ProgrammingLanguage Language,
     BlockInterface Interface,
-    IReadOnlyList<SclAssignment>? Statements = null) : EngineeringOperation("1.0", OperationId, ProjectContext, IdempotencyKey)
+    IReadOnlyList<SclAssignment>? Statements = null,
+    string? ControllerName = null) : EngineeringOperation("1.0", OperationId, ProjectContext, IdempotencyKey)
 {
     public override EngineeringOperationType OperationType => EngineeringOperationType.CreateBlock;
 }

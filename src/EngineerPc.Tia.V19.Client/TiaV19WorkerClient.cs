@@ -70,17 +70,66 @@ public sealed class TiaV19WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
         }
     }
 
-    public Task<TiaAdapterExecutionResult> CreateBlockAsync(
+    public async Task<TiaAdapterExecutionResult> CreateBlockAsync(
         CreateBlockOperation operation,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? sclSourceText = null)
     {
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(operation);
-        cancellationToken.ThrowIfCancellationRequested();
 
-        return Task.FromResult(new TiaAdapterExecutionResult(
-            null,
-            ["TIA Portal V19 block creation is unavailable through the worker client."]));
+        if (string.IsNullOrWhiteSpace(operation.ControllerName))
+        {
+            return new TiaAdapterExecutionResult(
+                null,
+                ["TIA V19 block creation requires the operation to declare a controller name."]);
+        }
+
+        if (string.IsNullOrWhiteSpace(sclSourceText))
+        {
+            return new TiaAdapterExecutionResult(
+                null,
+                ["TIA V19 block creation only supports the constrained Scl Function/FunctionBlock source surface."]);
+        }
+
+        await requestGate.WaitAsync(cancellationToken);
+        try
+        {
+            var request = new TiaV19WorkerRequest(
+                TiaV19WorkerProtocol.Version,
+                Guid.NewGuid().ToString("N"),
+                TiaV19WorkerProtocol.CreateBlockMethod,
+                operation.ProjectContext.ProjectId,
+                CreateBlockControllerName: operation.ControllerName,
+                CreateBlockName: operation.Name,
+                CreateBlockType: operation.BlockType.ToString(),
+                CreateBlockSourceText: sclSourceText,
+                CreateBlockExpectedSnapshotHash: operation.ProjectContext.SnapshotHash);
+            var responsePayload = await transport.SendAsync(options, request, cancellationToken);
+            var response = DeserializeCreateBlockResponse(responsePayload);
+
+            if (!string.Equals(response.RequestId, request.RequestId, StringComparison.Ordinal))
+            {
+                throw new InvalidOperationException("TIA V19 worker response did not match the request ID.");
+            }
+
+            if (response.Error is not null || response.ErrorCode != TiaV19CreateBlockErrorCode.None)
+            {
+                return new TiaAdapterExecutionResult(null, [response.Error ?? "TIA V19 block creation failed."]);
+            }
+
+            if (!string.Equals(response.ProjectId, operation.ProjectContext.ProjectId, StringComparison.Ordinal) ||
+                string.IsNullOrWhiteSpace(response.SnapshotHash))
+            {
+                throw new InvalidOperationException("TIA V19 worker response is not a valid block creation result.");
+            }
+
+            return new TiaAdapterExecutionResult(new ProjectContext(response.ProjectId!, response.SnapshotHash), []);
+        }
+        finally
+        {
+            requestGate.Release();
+        }
     }
 
     public async Task<ProjectBlockCatalogPage?> GetBlockCatalogPageAsync(
@@ -220,6 +269,21 @@ public sealed class TiaV19WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
         try
         {
             return JsonSerializer.Deserialize<TiaV19BlockCatalogResponse>(
+                responsePayload,
+                new JsonSerializerOptions(JsonSerializerDefaults.Web))
+                ?? throw new InvalidOperationException("TIA V19 worker returned an empty response.");
+        }
+        catch (JsonException exception)
+        {
+            throw new InvalidOperationException("TIA V19 worker returned invalid JSON.", exception);
+        }
+    }
+
+    private static TiaV19CreateBlockResponse DeserializeCreateBlockResponse(string responsePayload)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize<TiaV19CreateBlockResponse>(
                 responsePayload,
                 new JsonSerializerOptions(JsonSerializerDefaults.Web))
                 ?? throw new InvalidOperationException("TIA V19 worker returned an empty response.");

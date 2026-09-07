@@ -7,9 +7,10 @@ public sealed record TiaV19ProjectDefinition(string ProjectId, string ProjectFil
 
 public static class TiaV19WorkerProtocol
 {
-    public const string Version = "1.2";
+    public const string Version = "1.3";
     public const string GetProjectContextMethod = "get_project_context";
     public const string GetBlockCatalogMethod = "get_block_catalog";
+    public const string CreateBlockMethod = "create_block";
     public const int MaximumBlockCatalogBlockCount = 500;
 }
 
@@ -20,7 +21,12 @@ public sealed record TiaV19WorkerRequest(
     string? ProjectId,
     int? BlockCatalogStartIndex = null,
     int? BlockCatalogMaximumBlockCount = null,
-    string? BlockCatalogExpectedSnapshotHash = null);
+    string? BlockCatalogExpectedSnapshotHash = null,
+    string? CreateBlockControllerName = null,
+    string? CreateBlockName = null,
+    string? CreateBlockType = null,
+    string? CreateBlockSourceText = null,
+    string? CreateBlockExpectedSnapshotHash = null);
 
 public sealed record TiaV19WorkerConfiguration(IReadOnlyList<TiaV19ProjectDefinition> Projects);
 
@@ -102,7 +108,10 @@ public static class TiaV19ProjectSnapshot
         ThrowIfNullOrWhiteSpace(projectId, nameof(projectId));
         ThrowIfNullOrWhiteSpace(projectName, nameof(projectName));
         ThrowIfNullOrWhiteSpace(projectFilePath, nameof(projectFilePath));
-        ThrowIfNullOrWhiteSpace(version, nameof(version));
+        if (version is null)
+        {
+            throw new ArgumentNullException(nameof(version));
+        }
 
         var canonical = string.Join("\n", new[]
         {

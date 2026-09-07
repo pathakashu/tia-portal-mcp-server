@@ -39,4 +39,24 @@ public sealed class CreateBlockOperationTests
 
         Assert.Contains("Block name is required.", errors);
     }
+
+    [Fact]
+    public void ControllerName_IsOptionalAndDefaultsToNull()
+    {
+        var operation = new CreateBlockOperation(
+            Guid.NewGuid(),
+            new ProjectContext("project-1", "snapshot-sha256"),
+            "request-1",
+            "FB_Motor",
+            BlockType.FunctionBlock,
+            ProgrammingLanguage.Scl,
+            new BlockInterface([new BlockParameter("Start", "Bool")]));
+
+        Assert.Null(operation.ControllerName);
+        Assert.Empty(EngineeringIrValidator.Validate(operation));
+
+        var withController = operation with { ControllerName = "PLC_1" };
+
+        Assert.Equal("PLC_1", withController.ControllerName);
+    }
 }

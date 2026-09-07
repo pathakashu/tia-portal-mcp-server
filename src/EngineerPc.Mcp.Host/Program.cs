@@ -83,6 +83,11 @@ if (tiaV19WorkerClient is IDisposable disposableProjectContextAdapter)
 	app.Lifetime.ApplicationStopping.Register(disposableProjectContextAdapter.Dispose);
 }
 
+var blockWriteEnabled = tiaV19WorkerOptions.Enabled && tiaV19WorkerOptions.EnableBlockWrite;
+ITiaAdapter executionAdapter = blockWriteEnabled && tiaV19WorkerClient is not null
+	? tiaV19WorkerClient
+	: new PlanningOnlyTiaAdapter();
+
 var operationPlanner = new EngineeringOperationPlanner(new CreateBlockOperationValidator());
 var engineeringPolicy = new DefaultEngineeringPolicy();
 var workflow = new CreateBlockWorkflow(
@@ -90,7 +95,7 @@ var workflow = new CreateBlockWorkflow(
 	engineeringPolicy,
 	new ApprovalService(),
 	new TransactionStateMachine(),
-	new PlanningOnlyTiaAdapter(),
+	executionAdapter,
 	engineeringAuditSink);
 var sclBlockPreviewService = new SclBlockPreviewService(
 	operationPlanner,
@@ -110,7 +115,9 @@ var authorizationService = new ScopeAuthorizationService(
 		new AuthorizationRule("PlanCreateBlock", "Engineer", "engineering.plan"),
 		new AuthorizationRule("PreviewSclBlock", "Engineer", "engineering.plan"),
 		new AuthorizationRule("GetProjectContext", "Engineer", "engineering.read"),
-		new AuthorizationRule("GetBlockCatalog", "Engineer", "engineering.read")
+		new AuthorizationRule("GetBlockCatalog", "Engineer", "engineering.read"),
+		new AuthorizationRule("ApproveCreateBlock", "Engineer", "engineering.execute"),
+		new AuthorizationRule("ExecuteCreateBlock", "Engineer", "engineering.execute")
 	],
 	new JsonLinesSecurityEventSink(auditOptions.FilePath),
 	timeProvider);
@@ -125,14 +132,15 @@ var requestProcessor = new McpJsonRpcRequestProcessor(
 		authorizationService,
 		timeProvider),
 	tiaV19WorkerOptions.Enabled,
-	tiaV19WorkerOptions.Enabled && tiaV19WorkerOptions.EnableBlockCatalogRead);
+	tiaV19WorkerOptions.Enabled && tiaV19WorkerOptions.EnableBlockCatalogRead,
+	blockWriteEnabled);
 
 if (transportOptions.AllowInsecureLocalhost)
 {
 	var developmentPrincipal = new AuthenticatedPrincipal(
 		new AuthenticatedIdentity("localhost-development", "localhost-development"),
 		new HashSet<string>(["Engineer"], StringComparer.Ordinal),
-		new HashSet<string>(["engineering.plan", "engineering.read"], StringComparer.Ordinal));
+		new HashSet<string>(["engineering.plan", "engineering.read", "engineering.execute"], StringComparer.Ordinal));
 	app.MapMethods("/mcp", ["POST", "GET"], async context =>
 	{
 		await HandleMcpRequestAsync(context, developmentPrincipal);

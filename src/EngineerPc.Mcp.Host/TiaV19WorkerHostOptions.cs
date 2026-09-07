@@ -8,6 +8,8 @@ public sealed record TiaV19WorkerHostOptions
 
     public bool EnableBlockCatalogRead { get; init; }
 
+    public bool EnableBlockWrite { get; init; }
+
     public string? WorkerExecutablePath { get; init; }
 
     public string? ConfigurationPath { get; init; }

@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using EngineerPc.Contracts;
+using EngineerPc.Engineering.Approvals;
 using EngineerPc.Engineering.Engine;
 using EngineerPc.Engineering.Ir;
 using EngineerPc.Mcp;
@@ -18,17 +19,20 @@ public sealed class McpJsonRpcRequestProcessor
     private readonly McpToolRouter toolRouter;
     private readonly bool projectContextReadEnabled;
     private readonly bool blockCatalogReadEnabled;
+    private readonly bool blockWriteEnabled;
 
     public McpJsonRpcRequestProcessor(
         McpSessionManager sessionManager,
         McpToolRouter toolRouter,
         bool projectContextReadEnabled = false,
-        bool blockCatalogReadEnabled = false)
+        bool blockCatalogReadEnabled = false,
+        bool blockWriteEnabled = false)
     {
         this.sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
         this.toolRouter = toolRouter ?? throw new ArgumentNullException(nameof(toolRouter));
         this.projectContextReadEnabled = projectContextReadEnabled;
         this.blockCatalogReadEnabled = blockCatalogReadEnabled;
+        this.blockWriteEnabled = blockWriteEnabled;
     }
 
     public McpJsonRpcProcessingResult Process(
@@ -230,6 +234,23 @@ public sealed class McpJsonRpcRequestProcessor
                 inputSchema = GetBlockCatalogInputSchema()
             });
         }
+        if (blockWriteEnabled)
+        {
+            tools.Add(new
+            {
+                name = "approve_create_block",
+                title = "Approve Create Block",
+                description = "Records human approval for a create-block transaction that is awaiting approval.",
+                inputSchema = ApproveCreateBlockInputSchema()
+            });
+            tools.Add(new
+            {
+                name = "execute_create_block",
+                title = "Execute Create Block",
+                description = "Executes an approved create-block transaction against the configured TIA V19 project.",
+                inputSchema = ExecuteCreateBlockInputSchema()
+            });
+        }
 
         return Result(request.Id, new { tools });
     }
@@ -273,6 +294,13 @@ public sealed class McpJsonRpcRequestProcessor
                 arguments,
                 cancellationToken),
             "get_block_catalog" when blockCatalogReadEnabled => await CallGetBlockCatalogAsync(
+                request,
+                sessionId,
+                requestId,
+                arguments,
+                cancellationToken),
+            "approve_create_block" when blockWriteEnabled => CallApproveCreateBlock(request, sessionId, requestId, arguments),
+            "execute_create_block" when blockWriteEnabled => await CallExecuteCreateBlockAsync(
                 request,
                 sessionId,
                 requestId,
@@ -354,6 +382,99 @@ public sealed class McpJsonRpcRequestProcessor
             sessionId,
             McpTool.PreviewSclBlock,
             operation));
+        object structuredResult = result.Payload is null
+            ? new { errors = result.Errors }
+            : result.Payload;
+        return Result(request.Id, new
+        {
+            content = new[]
+            {
+                new
+                {
+                    type = "text",
+                    text = JsonSerializer.Serialize(structuredResult, SerializerOptions)
+                }
+            },
+            structuredContent = structuredResult,
+            isError = !result.IsSuccess
+        });
+    }
+
+    private McpJsonRpcProcessingResult CallApproveCreateBlock(
+        McpJsonRpcRequest request,
+        Guid sessionId,
+        Guid requestId,
+        JsonElement arguments)
+    {
+        ApproveCreateBlockRequest? approveRequest;
+        try
+        {
+            approveRequest = arguments.Deserialize<ApproveCreateBlockRequest>(SerializerOptions);
+        }
+        catch (JsonException)
+        {
+            return Error(request.Id, -32602, "Tool arguments are invalid for approve_create_block.");
+        }
+
+        if (approveRequest is null)
+        {
+            return Error(request.Id, -32602, "Tool arguments are invalid for approve_create_block.");
+        }
+
+        var result = toolRouter.ApproveCreateBlock(new McpToolCall<ApproveCreateBlockRequest>(
+            requestId,
+            requestId,
+            sessionId,
+            McpTool.ApproveCreateBlock,
+            approveRequest));
+        object structuredResult = result.Payload is null
+            ? new { errors = result.Errors }
+            : result.Payload;
+        return Result(request.Id, new
+        {
+            content = new[]
+            {
+                new
+                {
+                    type = "text",
+                    text = JsonSerializer.Serialize(structuredResult, SerializerOptions)
+                }
+            },
+            structuredContent = structuredResult,
+            isError = !result.IsSuccess
+        });
+    }
+
+    private async Task<McpJsonRpcProcessingResult> CallExecuteCreateBlockAsync(
+        McpJsonRpcRequest request,
+        Guid sessionId,
+        Guid requestId,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        ExecuteCreateBlockRequest? executeRequest;
+        try
+        {
+            executeRequest = arguments.Deserialize<ExecuteCreateBlockRequest>(SerializerOptions);
+        }
+        catch (JsonException)
+        {
+            return Error(request.Id, -32602, "Tool arguments are invalid for execute_create_block.");
+        }
+
+        if (executeRequest is null)
+        {
+            return Error(request.Id, -32602, "Tool arguments are invalid for execute_create_block.");
+        }
+
+        var result = await toolRouter.ExecuteCreateBlockAsync(
+            new McpToolCall<ExecuteCreateBlockRequest>(
+                requestId,
+                requestId,
+                sessionId,
+                McpTool.ExecuteCreateBlock,
+                executeRequest),
+            cancellationToken);
         object structuredResult = result.Payload is null
             ? new { errors = result.Errors }
             : result.Payload;
@@ -599,6 +720,53 @@ public sealed class McpJsonRpcRequestProcessor
             projectId = new { type = "string" }
         },
         required = new[] { "projectId" }
+    };
+
+    private static object TransactionInputSchema() => new
+    {
+        type = "object",
+        properties = new
+        {
+            transactionId = new { type = "string", format = "uuid" },
+            operationId = new { type = "string", format = "uuid" },
+            operationHash = new { type = "string" },
+            projectContext = new
+            {
+                type = "object",
+                properties = new
+                {
+                    projectId = new { type = "string" },
+                    snapshotHash = new { type = "string" }
+                },
+                required = new[] { "projectId", "snapshotHash" }
+            },
+            idempotencyKey = new { type = "string" },
+            state = new { type = "string" },
+            createdAtUtc = new { type = "string", format = "date-time" }
+        },
+        required = new[] { "transactionId", "operationId", "operationHash", "projectContext", "idempotencyKey", "state", "createdAtUtc" }
+    };
+
+    private static object ApproveCreateBlockInputSchema() => new
+    {
+        type = "object",
+        properties = new
+        {
+            transaction = TransactionInputSchema(),
+            expiresAtUtc = new { type = "string", format = "date-time" }
+        },
+        required = new[] { "transaction", "expiresAtUtc" }
+    };
+
+    private static object ExecuteCreateBlockInputSchema() => new
+    {
+        type = "object",
+        properties = new
+        {
+            transaction = TransactionInputSchema(),
+            operation = CreateBlockInputSchema()
+        },
+        required = new[] { "transaction", "operation" }
     };
 
     private static object GetBlockCatalogInputSchema() => new

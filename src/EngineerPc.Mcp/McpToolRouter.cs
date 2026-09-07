@@ -1,3 +1,4 @@
+using EngineerPc.Engineering.Approvals;
 using EngineerPc.Engineering.Engine;
 using EngineerPc.Engineering.Ir;
 using EngineerPc.Security;
@@ -116,6 +117,95 @@ public sealed class McpToolRouter
             preview.Errors);
     }
 
+    public McpToolResult<ApprovalResult> ApproveCreateBlock(McpToolCall<ApproveCreateBlockRequest> toolCall)
+    {
+        ArgumentNullException.ThrowIfNull(toolCall);
+
+        if (toolCall.CorrelationId == Guid.Empty)
+        {
+            return FailedApproval(toolCall, "Correlation ID is required.");
+        }
+
+        if (toolCall.Tool != McpTool.ApproveCreateBlock)
+        {
+            return FailedApproval(toolCall, $"Tool '{toolCall.Tool}' is not handled by this route.");
+        }
+
+        if (!sessionManager.TryGetReadySession(toolCall.SessionId, out var session, out var sessionError))
+        {
+            return FailedApproval(toolCall, sessionError!);
+        }
+
+        var authorization = authorizationService.Authorize(
+            session!.Principal!,
+            toolCall.Tool.ToString(),
+            toolCall.RequestId,
+            toolCall.CorrelationId);
+        if (!authorization.IsAllowed)
+        {
+            return FailedApproval(toolCall, authorization.DenialReason!);
+        }
+
+        if (!sessionManager.TryRecordRequest(toolCall.SessionId, toolCall.RequestId, out var requestError))
+        {
+            return FailedApproval(toolCall, requestError!);
+        }
+
+        var now = timeProvider.GetUtcNow();
+        var approval = new HumanApproval(
+            Guid.NewGuid(),
+            toolCall.Payload.Transaction.TransactionId,
+            toolCall.Payload.Transaction.OperationHash,
+            toolCall.Payload.Transaction.ProjectContext.SnapshotHash,
+            session.Principal!.Identity,
+            toolCall.Payload.ExpiresAtUtc);
+        var result = createBlockWorkflow.Approve(toolCall.Payload.Transaction, approval, session.Principal!.Identity, now);
+        return new McpToolResult<ApprovalResult>(toolCall.RequestId, toolCall.CorrelationId, result, result.Errors);
+    }
+
+    public async Task<McpToolResult<CreateBlockExecutionResult>> ExecuteCreateBlockAsync(
+        McpToolCall<ExecuteCreateBlockRequest> toolCall,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(toolCall);
+
+        if (toolCall.CorrelationId == Guid.Empty)
+        {
+            return FailedExecution(toolCall, "Correlation ID is required.");
+        }
+
+        if (toolCall.Tool != McpTool.ExecuteCreateBlock)
+        {
+            return FailedExecution(toolCall, $"Tool '{toolCall.Tool}' is not handled by this route.");
+        }
+
+        if (!sessionManager.TryGetReadySession(toolCall.SessionId, out var session, out var sessionError))
+        {
+            return FailedExecution(toolCall, sessionError!);
+        }
+
+        var authorization = authorizationService.Authorize(
+            session!.Principal!,
+            toolCall.Tool.ToString(),
+            toolCall.RequestId,
+            toolCall.CorrelationId);
+        if (!authorization.IsAllowed)
+        {
+            return FailedExecution(toolCall, authorization.DenialReason!);
+        }
+
+        if (!sessionManager.TryRecordRequest(toolCall.SessionId, toolCall.RequestId, out var requestError))
+        {
+            return FailedExecution(toolCall, requestError!);
+        }
+
+        var result = await createBlockWorkflow.ExecuteAsync(
+            toolCall.Payload.Transaction,
+            toolCall.Payload.Operation,
+            cancellationToken);
+        return new McpToolResult<CreateBlockExecutionResult>(toolCall.RequestId, toolCall.CorrelationId, result, result.Errors);
+    }
+
     public async Task<McpToolResult<ProjectContextReadResult>> GetProjectContextAsync(
         McpToolCall<GetProjectContextRequest> toolCall,
         CancellationToken cancellationToken)
@@ -229,5 +319,13 @@ public sealed class McpToolRouter
 
     private static McpToolResult<ProjectBlockCatalogReadResult> Failed(
         McpToolCall<GetBlockCatalogRequest> toolCall,
+        string error) => new(toolCall.RequestId, toolCall.CorrelationId, null, [error]);
+
+    private static McpToolResult<ApprovalResult> FailedApproval(
+        McpToolCall<ApproveCreateBlockRequest> toolCall,
+        string error) => new(toolCall.RequestId, toolCall.CorrelationId, null, [error]);
+
+    private static McpToolResult<CreateBlockExecutionResult> FailedExecution(
+        McpToolCall<ExecuteCreateBlockRequest> toolCall,
         string error) => new(toolCall.RequestId, toolCall.CorrelationId, null, [error]);
 }

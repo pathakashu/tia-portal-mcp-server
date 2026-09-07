@@ -31,7 +31,8 @@ public sealed class MockTiaAdapter : ITiaAdapter
 
     public async Task<TiaAdapterExecutionResult> CreateBlockAsync(
         CreateBlockOperation operation,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string? sclSourceText = null)
     {
         ArgumentNullException.ThrowIfNull(operation);
 

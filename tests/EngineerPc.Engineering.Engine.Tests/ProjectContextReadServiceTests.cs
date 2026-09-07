@@ -65,7 +65,8 @@ public sealed class ProjectContextReadServiceTests
 
         public Task<TiaAdapterExecutionResult> CreateBlockAsync(
             CreateBlockOperation operation,
-            CancellationToken cancellationToken) => throw new NotSupportedException();
+            CancellationToken cancellationToken,
+            string? sclSourceText = null) => throw new NotSupportedException();
     }
 
     private sealed class TestTimeProvider(DateTimeOffset utcNow) : TimeProvider

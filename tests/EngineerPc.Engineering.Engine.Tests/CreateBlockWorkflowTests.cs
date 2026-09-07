@@ -5,6 +5,7 @@ using EngineerPc.Engineering.Ir;
 using EngineerPc.Engineering.Policy;
 using EngineerPc.Engineering.Transactions;
 using EngineerPc.Engineering.Validation;
+using EngineerPc.Tia.Abstractions;
 using EngineerPc.Tia.Mock;
 
 namespace EngineerPc.Engineering.Engine.Tests;
@@ -57,8 +58,43 @@ public sealed class CreateBlockWorkflowTests
         Assert.Equal(operation.ProjectContext, context);
     }
 
+    [Fact]
+    public async Task ExecuteAsync_WithSclFunctionBlockIntent_PassesRenderedSourceToAdapter()
+    {
+        var operation = CreateOperation();
+        var adapter = new RecordingTiaAdapter();
+        var workflow = CreateWorkflow(adapter);
+        var submission = workflow.Submit(operation, NowUtc);
+        var approval = CreateApproval(submission.Transaction!);
+        var approved = workflow.Approve(submission.Transaction!, approval, Identity, NowUtc);
+
+        await workflow.ExecuteAsync(approved.Transaction!, operation, CancellationToken.None);
+
+        Assert.NotNull(adapter.ReceivedSclSourceText);
+        Assert.Contains("FUNCTION_BLOCK \"FB_Motor\"", adapter.ReceivedSclSourceText);
+    }
+
+    private sealed class RecordingTiaAdapter : ITiaAdapter
+    {
+        public string? ReceivedSclSourceText { get; private set; }
+
+        public Task<ProjectContext?> GetProjectContextAsync(string projectId, CancellationToken cancellationToken) =>
+            Task.FromResult<ProjectContext?>(new ProjectContext(projectId, "snapshot-2"));
+
+        public Task<TiaAdapterExecutionResult> CreateBlockAsync(
+            CreateBlockOperation operation,
+            CancellationToken cancellationToken,
+            string? sclSourceText = null)
+        {
+            ReceivedSclSourceText = sclSourceText;
+            return Task.FromResult(new TiaAdapterExecutionResult(
+                new ProjectContext(operation.ProjectContext.ProjectId, "snapshot-2"),
+                []));
+        }
+    }
+
     private static CreateBlockWorkflow CreateWorkflow(
-        MockTiaAdapter? adapter = null,
+        ITiaAdapter? adapter = null,
         IEngineeringAuditSink? auditSink = null) => new(
         new EngineeringOperationPlanner(new CreateBlockOperationValidator()),
         new DefaultEngineeringPolicy(),

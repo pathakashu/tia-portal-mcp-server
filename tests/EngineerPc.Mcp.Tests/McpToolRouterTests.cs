@@ -238,6 +238,96 @@ public sealed class McpToolRouterTests
         Assert.Equal("snapshot-1", catalogReadService.ExpectedSnapshotHash);
     }
 
+    [Fact]
+    public async Task ApproveThenExecuteCreateBlock_WithRequiredScope_CommitsAndUpdatesContext()
+    {
+        var timeProvider = new TestTimeProvider(NowUtc);
+        var sessionManager = new McpSessionManager(timeProvider);
+        var session = CreateReadySession(sessionManager, ["engineering.plan", "engineering.execute"]);
+        var router = CreateRouter(sessionManager, timeProvider);
+        var operation = CreateOperation();
+
+        var submission = router.PlanCreateBlock(new McpToolCall<CreateBlockOperation>(
+            Guid.NewGuid(), Guid.NewGuid(), session.SessionId, McpTool.PlanCreateBlock, operation));
+        Assert.True(submission.Payload?.IsAwaitingApproval);
+
+        var approval = router.ApproveCreateBlock(new McpToolCall<ApproveCreateBlockRequest>(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            session.SessionId,
+            McpTool.ApproveCreateBlock,
+            new ApproveCreateBlockRequest(submission.Payload!.Transaction!, NowUtc.AddMinutes(5))));
+        Assert.True(approval.Payload?.IsApproved);
+
+        var execution = await router.ExecuteCreateBlockAsync(
+            new McpToolCall<ExecuteCreateBlockRequest>(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                session.SessionId,
+                McpTool.ExecuteCreateBlock,
+                new ExecuteCreateBlockRequest(approval.Payload!.Transaction!, operation)),
+            CancellationToken.None);
+
+        Assert.True(execution.IsSuccess);
+        Assert.True(execution.Payload?.IsCommitted);
+        Assert.NotEqual(operation.ProjectContext.SnapshotHash, execution.Payload?.UpdatedProjectContext?.SnapshotHash);
+    }
+
+    [Fact]
+    public void ApproveCreateBlock_WithoutRequiredScope_RejectsRequest()
+    {
+        var timeProvider = new TestTimeProvider(NowUtc);
+        var sessionManager = new McpSessionManager(timeProvider);
+        var session = CreateReadySession(sessionManager, ["engineering.plan"]);
+        var router = CreateRouter(sessionManager, timeProvider);
+        var operation = CreateOperation();
+        var submission = router.PlanCreateBlock(new McpToolCall<CreateBlockOperation>(
+            Guid.NewGuid(), Guid.NewGuid(), session.SessionId, McpTool.PlanCreateBlock, operation));
+
+        var result = router.ApproveCreateBlock(new McpToolCall<ApproveCreateBlockRequest>(
+            Guid.NewGuid(),
+            Guid.NewGuid(),
+            session.SessionId,
+            McpTool.ApproveCreateBlock,
+            new ApproveCreateBlockRequest(submission.Payload!.Transaction!, NowUtc.AddMinutes(5))));
+
+        Assert.False(result.IsSuccess);
+        Assert.Contains("Authenticated principal does not satisfy the required role and scope.", result.Errors);
+    }
+
+    [Fact]
+    public async Task ExecuteCreateBlockAsync_WithoutApproval_RejectsExecution()
+    {
+        var timeProvider = new TestTimeProvider(NowUtc);
+        var sessionManager = new McpSessionManager(timeProvider);
+        var session = CreateReadySession(sessionManager, ["engineering.plan", "engineering.execute"]);
+        var router = CreateRouter(sessionManager, timeProvider);
+        var operation = CreateOperation();
+        var submission = router.PlanCreateBlock(new McpToolCall<CreateBlockOperation>(
+            Guid.NewGuid(), Guid.NewGuid(), session.SessionId, McpTool.PlanCreateBlock, operation));
+
+        var execution = await router.ExecuteCreateBlockAsync(
+            new McpToolCall<ExecuteCreateBlockRequest>(
+                Guid.NewGuid(),
+                Guid.NewGuid(),
+                session.SessionId,
+                McpTool.ExecuteCreateBlock,
+                new ExecuteCreateBlockRequest(submission.Payload!.Transaction!, operation)),
+            CancellationToken.None);
+
+        Assert.False(execution.IsSuccess);
+        Assert.Contains("Transaction must be approved before execution.", execution.Errors);
+    }
+
+    private static CreateBlockOperation CreateOperation() => new(
+        Guid.NewGuid(),
+        new ProjectContext("project-1", "snapshot-1"),
+        Guid.NewGuid().ToString("N"),
+        "FB_Motor",
+        BlockType.FunctionBlock,
+        ProgrammingLanguage.Scl,
+        new BlockInterface([]));
+
     private static McpSession CreateReadySession(
         McpSessionManager sessionManager,
         IEnumerable<string>? scopes = null)
@@ -257,7 +347,9 @@ public sealed class McpToolRouterTests
             new AuthorizationRule("PlanCreateBlock", "Engineer", "engineering.plan"),
             new AuthorizationRule("PreviewSclBlock", "Engineer", "engineering.plan"),
             new AuthorizationRule("GetProjectContext", "Engineer", "engineering.read"),
-            new AuthorizationRule("GetBlockCatalog", "Engineer", "engineering.read")
+            new AuthorizationRule("GetBlockCatalog", "Engineer", "engineering.read"),
+            new AuthorizationRule("ApproveCreateBlock", "Engineer", "engineering.execute"),
+            new AuthorizationRule("ExecuteCreateBlock", "Engineer", "engineering.execute")
         ],
         new InMemorySecurityEventSink(),
         timeProvider);

@@ -34,7 +34,7 @@ public sealed class SclBlockPreviewServiceTests
         var result = service.Generate(CreateOperation() with { Language = ProgrammingLanguage.Lad }, Identity);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("SCL preview requires the Scl programming language.", result.Errors);
+        Assert.Contains("SCL source generation requires the Scl programming language.", result.Errors);
         Assert.Equal(EngineeringAuditEventType.SclPreviewRejected, Assert.Single(auditSink.Events).EventType);
     }
 
