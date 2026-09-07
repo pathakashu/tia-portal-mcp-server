@@ -2,7 +2,7 @@ using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using EngineerPc.Mcp.Host;
-using EngineerPc.Tia.V18.Client;
+using EngineerPc.Tia.V19.Client;
 
 namespace EngineerPc.Mcp.Host.Tests;
 
@@ -46,23 +46,23 @@ public sealed class McpTransportSecurityTests
     }
 
     [Fact]
-    public void TiaV18WorkerOptions_WhenEnabledWithMissingPaths_FailClosed()
+    public void TiaV19WorkerOptions_WhenEnabledWithMissingPaths_FailClosed()
     {
-        var options = new TiaV18WorkerHostOptions
+        var options = new TiaV19WorkerHostOptions
         {
             Enabled = true,
-            WorkerExecutablePath = "C:\\Missing\\EngineerPc.Tia.V18.Worker.exe",
+            WorkerExecutablePath = "C:\\Missing\\EngineerPc.Tia.V19.Worker.exe",
             ConfigurationPath = "C:\\Missing\\worker.json",
             RequestTimeoutSeconds = 30
         };
 
-        Assert.Throws<ArgumentException>(() => new TiaV18WorkerClient(options.ToClientOptions()));
+        Assert.Throws<ArgumentException>(() => new TiaV19WorkerClient(options.ToClientOptions()));
     }
 
     [Fact]
-    public void TiaV18WorkerOptions_WhenDisabled_CannotProduceClientOptions()
+    public void TiaV19WorkerOptions_WhenDisabled_CannotProduceClientOptions()
     {
-        Assert.Throws<InvalidOperationException>(() => new TiaV18WorkerHostOptions().ToClientOptions());
+        Assert.Throws<InvalidOperationException>(() => new TiaV19WorkerHostOptions().ToClientOptions());
     }
 
     [Fact]

@@ -1,24 +1,24 @@
-using EngineerPc.Tia.V18.Protocol;
+using EngineerPc.Tia.V19.Protocol;
 using Siemens.Engineering;
 using Siemens.Engineering.HW;
 using Siemens.Engineering.HW.Features;
 using Siemens.Engineering.SW;
 using Siemens.Engineering.SW.Blocks;
 
-namespace EngineerPc.Tia.V18;
+namespace EngineerPc.Tia.V19;
 
-public sealed class TiaV18Adapter : IDisposable
+public sealed class TiaV19Adapter : IDisposable
 {
-    private readonly TiaV18ProjectCatalog projectCatalog;
+    private readonly TiaV19ProjectCatalog projectCatalog;
     private TiaPortal? tiaPortal;
     private bool disposed;
 
-    public TiaV18Adapter(TiaV18ProjectCatalog projectCatalog)
+    public TiaV19Adapter(TiaV19ProjectCatalog projectCatalog)
     {
         this.projectCatalog = projectCatalog ?? throw new ArgumentNullException(nameof(projectCatalog));
     }
 
-    public TiaV18ProjectContextResponse ReadProjectContext(string requestId, string projectId)
+    public TiaV19ProjectContextResponse ReadProjectContext(string requestId, string projectId)
     {
         ThrowIfDisposed();
         if (string.IsNullOrWhiteSpace(requestId))
@@ -33,34 +33,34 @@ public sealed class TiaV18Adapter : IDisposable
 
         if (!projectCatalog.TryGetProject(projectId, out var projectDefinition) || projectDefinition is null)
         {
-            return new TiaV18ProjectContextResponse(requestId, null, null, "The configured TIA V18 project was not found.");
+            return new TiaV19ProjectContextResponse(requestId, null, null, "The configured TIA V19 project was not found.");
         }
 
         if (!File.Exists(projectDefinition.ProjectFilePath))
         {
-            return new TiaV18ProjectContextResponse(requestId, null, null, "The configured TIA V18 project file was not found.");
+            return new TiaV19ProjectContextResponse(requestId, null, null, "The configured TIA V19 project file was not found.");
         }
 
         Project? project = null;
         try
         {
             project = GetTiaPortal().Projects.Open(new FileInfo(projectDefinition.ProjectFilePath));
-            var snapshotHash = TiaV18ProjectSnapshot.Calculate(
+            var snapshotHash = TiaV19ProjectSnapshot.Calculate(
                 projectDefinition.ProjectId,
                 project.Name,
                 project.Path.FullName,
                 project.LastModified.ToUniversalTime(),
                 project.Size,
                 project.Version);
-            return new TiaV18ProjectContextResponse(requestId, projectDefinition.ProjectId, snapshotHash, null);
+            return new TiaV19ProjectContextResponse(requestId, projectDefinition.ProjectId, snapshotHash, null);
         }
         catch (Exception exception)
         {
-            return new TiaV18ProjectContextResponse(
+            return new TiaV19ProjectContextResponse(
                 requestId,
                 null,
                 null,
-                $"TIA Portal V18 project context read failed: {exception.GetType().Name}.");
+                $"TIA Portal V19 project context read failed: {exception.GetType().Name}.");
         }
         finally
         {
@@ -68,7 +68,7 @@ public sealed class TiaV18Adapter : IDisposable
         }
     }
 
-    public TiaV18BlockCatalogResponse ReadBlockCatalog(
+    public TiaV19BlockCatalogResponse ReadBlockCatalog(
         string requestId,
         string projectId,
         int startIndex,
@@ -91,26 +91,26 @@ public sealed class TiaV18Adapter : IDisposable
             throw new ArgumentOutOfRangeException(nameof(startIndex));
         }
 
-        if (maximumBlockCount <= 0 || maximumBlockCount > TiaV18WorkerProtocol.MaximumBlockCatalogBlockCount)
+        if (maximumBlockCount <= 0 || maximumBlockCount > TiaV19WorkerProtocol.MaximumBlockCatalogBlockCount)
         {
             throw new ArgumentOutOfRangeException(nameof(maximumBlockCount));
         }
 
         if (!projectCatalog.TryGetProject(projectId, out var projectDefinition) || projectDefinition is null)
         {
-            return FailedBlockCatalog(requestId, "The configured TIA V18 project was not found.");
+            return FailedBlockCatalog(requestId, "The configured TIA V19 project was not found.");
         }
 
         if (!File.Exists(projectDefinition.ProjectFilePath))
         {
-            return FailedBlockCatalog(requestId, "The configured TIA V18 project file was not found.");
+            return FailedBlockCatalog(requestId, "The configured TIA V19 project file was not found.");
         }
 
         Project? project = null;
         try
         {
             project = GetTiaPortal().Projects.Open(new FileInfo(projectDefinition.ProjectFilePath));
-            var snapshotHash = TiaV18ProjectSnapshot.Calculate(
+            var snapshotHash = TiaV19ProjectSnapshot.Calculate(
                 projectDefinition.ProjectId,
                 project.Name,
                 project.Path.FullName,
@@ -121,8 +121,8 @@ public sealed class TiaV18Adapter : IDisposable
             {
                 return FailedBlockCatalog(
                     requestId,
-                    TiaV18BlockCatalogErrorCode.SnapshotChanged,
-                    "The configured TIA V18 project snapshot has changed.");
+                    TiaV19BlockCatalogErrorCode.SnapshotChanged,
+                    "The configured TIA V19 project snapshot has changed.");
             }
             var blocks = EnumerateBlocks(project)
                 .OrderBy(block => block.ControllerName, StringComparer.Ordinal)
@@ -134,19 +134,19 @@ public sealed class TiaV18Adapter : IDisposable
             var nextStartIndex = (long)startIndex + page.Length < blocks.Length
                 ? startIndex + page.Length
                 : (int?)null;
-            return new TiaV18BlockCatalogResponse(
+            return new TiaV19BlockCatalogResponse(
                 requestId,
                 projectDefinition.ProjectId,
                 snapshotHash,
                 page,
                 blocks.Length,
                 nextStartIndex,
-                TiaV18BlockCatalogErrorCode.None,
+                TiaV19BlockCatalogErrorCode.None,
                 null);
         }
         catch (Exception exception)
         {
-            return FailedBlockCatalog(requestId, $"TIA Portal V18 block catalog read failed: {exception.GetType().Name}.");
+            return FailedBlockCatalog(requestId, $"TIA Portal V19 block catalog read failed: {exception.GetType().Name}.");
         }
         finally
         {
@@ -167,16 +167,16 @@ public sealed class TiaV18Adapter : IDisposable
 
     private TiaPortal GetTiaPortal() => tiaPortal ?? (tiaPortal = new TiaPortal(TiaPortalMode.WithoutUserInterface));
 
-    private static TiaV18BlockCatalogResponse FailedBlockCatalog(
+    private static TiaV19BlockCatalogResponse FailedBlockCatalog(
         string requestId,
-        string error) => FailedBlockCatalog(requestId, TiaV18BlockCatalogErrorCode.None, error);
+        string error) => FailedBlockCatalog(requestId, TiaV19BlockCatalogErrorCode.None, error);
 
-    private static TiaV18BlockCatalogResponse FailedBlockCatalog(
+    private static TiaV19BlockCatalogResponse FailedBlockCatalog(
         string requestId,
-        TiaV18BlockCatalogErrorCode errorCode,
+        TiaV19BlockCatalogErrorCode errorCode,
         string error) => new(requestId, null, null, [], null, null, errorCode, error);
 
-    private static IEnumerable<TiaV18BlockDefinition> EnumerateBlocks(Project project)
+    private static IEnumerable<TiaV19BlockDefinition> EnumerateBlocks(Project project)
     {
         foreach (var device in project.Devices)
         {
@@ -198,7 +198,7 @@ public sealed class TiaV18Adapter : IDisposable
         }
     }
 
-    private static IEnumerable<TiaV18BlockDefinition> EnumerateBlocks(Device device)
+    private static IEnumerable<TiaV19BlockDefinition> EnumerateBlocks(Device device)
     {
         foreach (var block in EnumerateBlocks(device.GetService<SoftwareContainer>()))
         {
@@ -214,7 +214,7 @@ public sealed class TiaV18Adapter : IDisposable
         }
     }
 
-    private static IEnumerable<TiaV18BlockDefinition> EnumerateBlocks(DeviceItem deviceItem)
+    private static IEnumerable<TiaV19BlockDefinition> EnumerateBlocks(DeviceItem deviceItem)
     {
         foreach (var block in EnumerateBlocks(deviceItem.GetService<SoftwareContainer>()))
         {
@@ -230,7 +230,7 @@ public sealed class TiaV18Adapter : IDisposable
         }
     }
 
-    private static IEnumerable<TiaV18BlockDefinition> EnumerateBlocks(SoftwareContainer? softwareContainer)
+    private static IEnumerable<TiaV19BlockDefinition> EnumerateBlocks(SoftwareContainer? softwareContainer)
     {
         if (softwareContainer?.Software is not PlcSoftware plcSoftware)
         {
@@ -243,11 +243,11 @@ public sealed class TiaV18Adapter : IDisposable
         }
     }
 
-    private static IEnumerable<TiaV18BlockDefinition> EnumerateBlocks(string controllerName, PlcBlockGroup blockGroup)
+    private static IEnumerable<TiaV19BlockDefinition> EnumerateBlocks(string controllerName, PlcBlockGroup blockGroup)
     {
         foreach (var block in blockGroup.Blocks)
         {
-            yield return new TiaV18BlockDefinition(
+            yield return new TiaV19BlockDefinition(
                 controllerName,
                 block.Name,
                 block.Namespace,
@@ -268,7 +268,7 @@ public sealed class TiaV18Adapter : IDisposable
     {
         if (disposed)
         {
-            throw new ObjectDisposedException(nameof(TiaV18Adapter));
+            throw new ObjectDisposedException(nameof(TiaV19Adapter));
         }
     }
 }

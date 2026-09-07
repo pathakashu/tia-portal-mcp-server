@@ -16,5 +16,5 @@ The Engineer-PC runtime remains responsible for:
 - approval
 - validation
 - transaction execution
-- TIA Portal V18 interaction
+- TIA Portal V19 interaction
 - audit

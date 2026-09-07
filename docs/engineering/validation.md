@@ -8,7 +8,7 @@ Validation stages:
 4. Reference validation
 5. Data type validation
 6. Dependency/impact validation
-7. TIA V18 capability validation
+7. TIA V19 capability validation
 8. Post-execution state validation
 9. Compile validation
 

@@ -39,13 +39,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.Mock", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.Mock.Tests", "tests\EngineerPc.Tia.Mock.Tests\EngineerPc.Tia.Mock.Tests.csproj", "{B2C75504-B53A-4FDC-979A-BC413249C794}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V18.Protocol", "src\EngineerPc.Tia.V18.Protocol\EngineerPc.Tia.V18.Protocol.csproj", "{10E6B04E-5A65-4EC2-BE1D-0A33A9F18831}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V19.Protocol", "src\EngineerPc.Tia.V19.Protocol\EngineerPc.Tia.V19.Protocol.csproj", "{10E6B04E-5A65-4EC2-BE1D-0A33A9F18831}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V18", "src\EngineerPc.Tia.V18\EngineerPc.Tia.V18.csproj", "{B63B7319-6CCF-42AC-902C-6ABBB92F808F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V19", "src\EngineerPc.Tia.V19\EngineerPc.Tia.V19.csproj", "{B63B7319-6CCF-42AC-902C-6ABBB92F808F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V18.Worker", "src\EngineerPc.Tia.V18.Worker\EngineerPc.Tia.V18.Worker.csproj", "{806B5029-C4D8-4BB9-A14C-6A63FE37E6E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V19.Worker", "src\EngineerPc.Tia.V19.Worker\EngineerPc.Tia.V19.Worker.csproj", "{806B5029-C4D8-4BB9-A14C-6A63FE37E6E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V18.Protocol.Tests", "tests\EngineerPc.Tia.V18.Protocol.Tests\EngineerPc.Tia.V18.Protocol.Tests.csproj", "{B6EACDDE-85F5-45F9-82D4-79945E886F04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V19.Protocol.Tests", "tests\EngineerPc.Tia.V19.Protocol.Tests\EngineerPc.Tia.V19.Protocol.Tests.csproj", "{B6EACDDE-85F5-45F9-82D4-79945E886F04}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.ProjectModel", "src\EngineerPc.ProjectModel\EngineerPc.ProjectModel.csproj", "{FAD27BB4-B369-4253-97B0-04574E8BBC4D}"
 EndProject
@@ -75,9 +75,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Mcp.Host", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Mcp.Host.Tests", "tests\EngineerPc.Mcp.Host.Tests\EngineerPc.Mcp.Host.Tests.csproj", "{E603C81C-79B8-4C04-A8F9-5F5BB5190306}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V18.Client", "src\EngineerPc.Tia.V18.Client\EngineerPc.Tia.V18.Client.csproj", "{97DDE0D6-3E96-443B-AF45-7D061B41DDBD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V19.Client", "src\EngineerPc.Tia.V19.Client\EngineerPc.Tia.V19.Client.csproj", "{97DDE0D6-3E96-443B-AF45-7D061B41DDBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V18.Client.Tests", "tests\EngineerPc.Tia.V18.Client.Tests\EngineerPc.Tia.V18.Client.Tests.csproj", "{C95A3B04-5793-440D-B999-D90EC8945052}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EngineerPc.Tia.V19.Client.Tests", "tests\EngineerPc.Tia.V19.Client.Tests\EngineerPc.Tia.V19.Client.Tests.csproj", "{C95A3B04-5793-440D-B999-D90EC8945052}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

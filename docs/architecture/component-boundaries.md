@@ -9,5 +9,5 @@
 | Validation | deterministic checks | transport |
 | Transactions | write lifecycle/idempotency | MCP protocol |
 | Project Intelligence | model/graph/search | Siemens objects |
-| TIA V18 Adapter | Siemens integration | policy/approval |
+| TIA V19 Adapter | Siemens integration | policy/approval |
 | Audit | immutable event record | engineering decisions |

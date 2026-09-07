@@ -1,6 +1,6 @@
-# Copilot Agent Instructions — TIA Portal V18 Only
+# Copilot Agent Instructions — TIA Portal V19 Only
 
-You are working on an industrial automation engineering runtime for Siemens TIA Portal V18.
+You are working on an industrial automation engineering runtime for Siemens TIA Portal V19.
 
 Before changing code:
 
@@ -12,11 +12,11 @@ Before changing code:
 
 ## Non-negotiable constraints
 
-- TIA Portal V18 is the only supported TIA version.
-- TIA Openness V18 is the only Siemens API target.
-- Never add V19/V20/V21 code, documentation, or configuration.
+- TIA Portal V19 is the only supported TIA version.
+- TIA Openness V19 is the only Siemens API target.
+- Never add V18/V20/V21 code, documentation, or configuration.
 - Never invent Siemens API members.
-- Never expose Siemens.Engineering types outside the V18 adapter boundary.
+- Never expose Siemens.Engineering types outside the V19 adapter boundary.
 - Never let MCP handlers directly call TIA Openness.
 - Never let remote AI input bypass policy, approval, validation, or transactions.
 - Never execute arbitrary shell commands, scripts, DLLs, or filesystem operations supplied by AI input.

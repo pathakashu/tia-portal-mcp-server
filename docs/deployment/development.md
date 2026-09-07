@@ -7,8 +7,8 @@ Recommended environment:
 - Git
 - .NET SDK required by the implementation
 - GitHub Copilot
-- TIA Portal V18 for real integration testing
-- TIA Portal Openness V18 assemblies installed with the Siemens environment
+- TIA Portal V19 for real integration testing
+- TIA Portal Openness V19 assemblies installed with the Siemens environment
 
 Build and unit tests must work without TIA Portal by using MockTIAAdapter.
 

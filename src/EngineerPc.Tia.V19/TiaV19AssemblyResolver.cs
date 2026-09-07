@@ -1,11 +1,11 @@
 using System.Reflection;
 
-namespace EngineerPc.Tia.V18;
+namespace EngineerPc.Tia.V19;
 
-public static class TiaV18AssemblyResolver
+public static class TiaV19AssemblyResolver
 {
-    private const string DefaultPublicApiDirectory = @"C:\Program Files\Siemens\Automation\Portal V18\PublicAPI\V18";
-    private const string PublicApiDirectoryEnvironmentVariable = "TIA_V18_PUBLIC_API_DIRECTORY";
+    private const string DefaultPublicApiDirectory = @"C:\Program Files\Siemens\Automation\Portal V19\PublicAPI\V19";
+    private const string PublicApiDirectoryEnvironmentVariable = "TIA_V19_PUBLIC_API_DIRECTORY";
     private static readonly object SyncRoot = new();
     private static string? publicApiDirectory;
 
@@ -20,7 +20,7 @@ public static class TiaV18AssemblyResolver
 
         if (!File.Exists(engineeringAssemblyPath))
         {
-            throw new FileNotFoundException("The Siemens TIA Portal V18 PublicAPI assembly was not found.", engineeringAssemblyPath);
+            throw new FileNotFoundException("The Siemens TIA Portal V19 PublicAPI assembly was not found.", engineeringAssemblyPath);
         }
 
         lock (SyncRoot)
@@ -29,7 +29,7 @@ public static class TiaV18AssemblyResolver
             {
                 if (!string.Equals(publicApiDirectory, fullDirectory, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new InvalidOperationException("TIA Portal V18 PublicAPI directory is already configured.");
+                    throw new InvalidOperationException("TIA Portal V19 PublicAPI directory is already configured.");
                 }
 
                 return;

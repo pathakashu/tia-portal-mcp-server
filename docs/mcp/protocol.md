@@ -26,7 +26,7 @@ The server always advertises the approval-gated `plan_create_block` tool through
 }
 ```
 
-The server also always advertises `preview_scl_block`. It accepts the same typed block intent as `plan_create_block`, requires the authenticated `Engineer` role and `engineering.plan` scope, and applies the same deterministic planning validation and create-block policy evaluation. It generates constrained source for `Function` and `FunctionBlock` intents with `language: "Scl"`; parameter data types must be single identifier tokens. The interface can declare inputs and outputs. Each optional structured statement is an assignment whose target must be a declared output and whose source must be a declared input or output identifier. The result includes the deterministic operation plan, policy decision, and SCL source text. It does not create a transaction, start the V18 worker, call TIA Openness, or write a block. The engine records a scrubbed preview outcome.
+The server also always advertises `preview_scl_block`. It accepts the same typed block intent as `plan_create_block`, requires the authenticated `Engineer` role and `engineering.plan` scope, and applies the same deterministic planning validation and create-block policy evaluation. It generates constrained source for `Function` and `FunctionBlock` intents with `language: "Scl"`; parameter data types must be single identifier tokens. The interface can declare inputs and outputs. Each optional structured statement is an assignment whose target must be a declared output and whose source must be a declared input or output identifier. The result includes the deterministic operation plan, policy decision, and SCL source text. It does not create a transaction, start the V19 worker, call TIA Openness, or write a block. The engine records a scrubbed preview outcome.
 
 ```json
 {
@@ -52,7 +52,7 @@ The server also always advertises `preview_scl_block`. It accepts the same typed
 }
 ```
 
-When the locally managed `TiaV18Worker:Enabled` setting is `true` and its worker executable and configuration paths validate, the server additionally advertises the read-only `get_project_context` tool. It requires the authenticated `Engineer` role and `engineering.read` scope. The request contains only the configured project ID, never a project file path:
+When the locally managed `TiaV19Worker:Enabled` setting is `true` and its worker executable and configuration paths validate, the server additionally advertises the read-only `get_project_context` tool. It requires the authenticated `Engineer` role and `engineering.read` scope. The request contains only the configured project ID, never a project file path:
 
 ```json
 {
@@ -68,9 +68,9 @@ When the locally managed `TiaV18Worker:Enabled` setting is `true` and its worker
 }
 ```
 
-The engine routes this call to the V18 adapter abstraction, records a scrubbed project-context read outcome, and returns only the project ID and snapshot hash. The read tool is omitted when the worker is disabled, so remote input cannot activate process execution or select executable, configuration, or project paths.
+The engine routes this call to the V19 adapter abstraction, records a scrubbed project-context read outcome, and returns only the project ID and snapshot hash. The read tool is omitted when the worker is disabled, so remote input cannot activate process execution or select executable, configuration, or project paths.
 
-When `TiaV18Worker:Enabled` and the separate default-off `TiaV18Worker:EnableBlockCatalogRead` settings are both `true`, the server additionally advertises the read-only `get_block_catalog` tool. It also requires the authenticated `Engineer` role and `engineering.read` scope. The request contains only the configured project ID:
+When `TiaV19Worker:Enabled` and the separate default-off `TiaV19Worker:EnableBlockCatalogRead` settings are both `true`, the server additionally advertises the read-only `get_block_catalog` tool. It also requires the authenticated `Engineer` role and `engineering.read` scope. The request contains only the configured project ID:
 
 ```json
 {

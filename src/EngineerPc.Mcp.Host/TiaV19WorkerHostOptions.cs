@@ -1,8 +1,8 @@
-using EngineerPc.Tia.V18.Client;
+using EngineerPc.Tia.V19.Client;
 
 namespace EngineerPc.Mcp.Host;
 
-public sealed record TiaV18WorkerHostOptions
+public sealed record TiaV19WorkerHostOptions
 {
     public bool Enabled { get; init; }
 
@@ -14,14 +14,14 @@ public sealed record TiaV18WorkerHostOptions
 
     public int RequestTimeoutSeconds { get; init; } = 30;
 
-    public TiaV18WorkerClientOptions ToClientOptions()
+    public TiaV19WorkerClientOptions ToClientOptions()
     {
         if (!Enabled)
         {
-            throw new InvalidOperationException("TIA Portal V18 worker is disabled.");
+            throw new InvalidOperationException("TIA Portal V19 worker is disabled.");
         }
 
-        return new TiaV18WorkerClientOptions(
+        return new TiaV19WorkerClientOptions(
             WorkerExecutablePath ?? string.Empty,
             ConfigurationPath ?? string.Empty,
             TimeSpan.FromSeconds(RequestTimeoutSeconds));

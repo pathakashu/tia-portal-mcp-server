@@ -30,4 +30,4 @@ Example:
 
 `statements` is optional and currently supports only typed SCL assignments. The target must be a declared output; the source must be a declared input or output identifier. Free-form source text, expressions, and control flow are not part of the IR.
 
-The IR is translated by the V18 adapter into Siemens-specific operations.
+The IR is translated by the V19 adapter into Siemens-specific operations.

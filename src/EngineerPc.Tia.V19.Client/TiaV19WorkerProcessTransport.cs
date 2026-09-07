@@ -1,20 +1,20 @@
 using System.Diagnostics;
 using System.Text.Json;
-using EngineerPc.Tia.V18.Protocol;
+using EngineerPc.Tia.V19.Protocol;
 
-namespace EngineerPc.Tia.V18.Client;
+namespace EngineerPc.Tia.V19.Client;
 
-public sealed class TiaV18WorkerProcessTransport : ITiaV18WorkerTransport
+public sealed class TiaV19WorkerProcessTransport : ITiaV19WorkerTransport
 {
     public async Task<string> SendAsync(
-        TiaV18WorkerClientOptions options,
-        TiaV18WorkerRequest request,
+        TiaV19WorkerClientOptions options,
+        TiaV19WorkerRequest request,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(request);
 
-        var validation = TiaV18WorkerClientOptionsValidator.Validate(options);
+        var validation = TiaV19WorkerClientOptionsValidator.Validate(options);
         if (!validation.IsValid)
         {
             throw new ArgumentException(string.Join(" ", validation.Errors), nameof(options));
@@ -34,7 +34,7 @@ public sealed class TiaV18WorkerProcessTransport : ITiaV18WorkerTransport
         using var process = new Process { StartInfo = startInfo };
         if (!process.Start())
         {
-            throw new InvalidOperationException("TIA V18 worker process could not be started.");
+            throw new InvalidOperationException("TIA V19 worker process could not be started.");
         }
 
         var standardErrorTask = process.StandardError.ReadToEndAsync();
@@ -67,7 +67,7 @@ public sealed class TiaV18WorkerProcessTransport : ITiaV18WorkerTransport
 
             if (!string.IsNullOrWhiteSpace(trailingOutput))
             {
-                throw new InvalidOperationException("TIA V18 worker process returned more than one response.");
+                throw new InvalidOperationException("TIA V19 worker process returned more than one response.");
             }
 
             return response;
@@ -75,7 +75,7 @@ public sealed class TiaV18WorkerProcessTransport : ITiaV18WorkerTransport
         catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
             Terminate(process);
-            throw new TimeoutException("TIA V18 worker request timed out.");
+            throw new TimeoutException("TIA V19 worker request timed out.");
         }
         catch
         {
@@ -88,8 +88,8 @@ public sealed class TiaV18WorkerProcessTransport : ITiaV18WorkerTransport
     {
         var sanitizedError = standardError.Replace(Environment.NewLine, " ", StringComparison.Ordinal).Trim();
         return string.IsNullOrEmpty(sanitizedError)
-            ? $"TIA V18 worker process {failure}."
-            : $"TIA V18 worker process {failure}: {sanitizedError[..Math.Min(sanitizedError.Length, 512)]}";
+            ? $"TIA V19 worker process {failure}."
+            : $"TIA V19 worker process {failure}: {sanitizedError[..Math.Min(sanitizedError.Length, 512)]}";
     }
 
     private static void Terminate(Process process)

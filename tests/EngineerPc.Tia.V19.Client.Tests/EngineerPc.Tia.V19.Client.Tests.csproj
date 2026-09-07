@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EngineerPc.Tia.V18.Protocol\EngineerPc.Tia.V18.Protocol.csproj" />
+    <ProjectReference Include="..\..\src\EngineerPc.Tia.V19.Client\EngineerPc.Tia.V19.Client.csproj" />
   </ItemGroup>
 
 </Project>

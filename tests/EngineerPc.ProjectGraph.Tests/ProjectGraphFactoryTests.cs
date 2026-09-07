@@ -41,7 +41,7 @@ public sealed class ProjectGraphFactoryTests
 
     private static ProjectSnapshot CreateSnapshot() => ProjectSnapshotFactory.Create(
         "project-1",
-        "V18",
+        "V19",
         new DateTimeOffset(2026, 9, 7, 12, 0, 0, TimeSpan.Zero),
         [
             CreateArtifact("block-motor", "FB_Motor", ProjectArtifactType.Block),

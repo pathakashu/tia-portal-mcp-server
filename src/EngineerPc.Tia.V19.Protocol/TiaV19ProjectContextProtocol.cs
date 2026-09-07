@@ -1,11 +1,11 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace EngineerPc.Tia.V18.Protocol;
+namespace EngineerPc.Tia.V19.Protocol;
 
-public sealed record TiaV18ProjectDefinition(string ProjectId, string ProjectFilePath);
+public sealed record TiaV19ProjectDefinition(string ProjectId, string ProjectFilePath);
 
-public static class TiaV18WorkerProtocol
+public static class TiaV19WorkerProtocol
 {
     public const string Version = "1.2";
     public const string GetProjectContextMethod = "get_project_context";
@@ -13,7 +13,7 @@ public static class TiaV18WorkerProtocol
     public const int MaximumBlockCatalogBlockCount = 500;
 }
 
-public sealed record TiaV18WorkerRequest(
+public sealed record TiaV19WorkerRequest(
     string ProtocolVersion,
     string RequestId,
     string Method,
@@ -22,35 +22,35 @@ public sealed record TiaV18WorkerRequest(
     int? BlockCatalogMaximumBlockCount = null,
     string? BlockCatalogExpectedSnapshotHash = null);
 
-public sealed record TiaV18WorkerConfiguration(IReadOnlyList<TiaV18ProjectDefinition> Projects);
+public sealed record TiaV19WorkerConfiguration(IReadOnlyList<TiaV19ProjectDefinition> Projects);
 
-public sealed class TiaV18ProjectCatalog
+public sealed class TiaV19ProjectCatalog
 {
-    private readonly IReadOnlyDictionary<string, TiaV18ProjectDefinition> projects;
+    private readonly IReadOnlyDictionary<string, TiaV19ProjectDefinition> projects;
 
-    public TiaV18ProjectCatalog(IEnumerable<TiaV18ProjectDefinition> projects)
+    public TiaV19ProjectCatalog(IEnumerable<TiaV19ProjectDefinition> projects)
     {
         if (projects is null)
         {
             throw new ArgumentNullException(nameof(projects));
         }
 
-        var catalog = new Dictionary<string, TiaV18ProjectDefinition>(StringComparer.Ordinal);
+        var catalog = new Dictionary<string, TiaV19ProjectDefinition>(StringComparer.Ordinal);
         foreach (var project in projects)
         {
             if (string.IsNullOrWhiteSpace(project.ProjectId))
             {
-                throw new ArgumentException("TIA V18 project ID is required.", nameof(projects));
+                throw new ArgumentException("TIA V19 project ID is required.", nameof(projects));
             }
 
             if (string.IsNullOrWhiteSpace(project.ProjectFilePath) || !IsAbsolutePath(project.ProjectFilePath))
             {
-                throw new ArgumentException("TIA V18 project file path must be absolute.", nameof(projects));
+                throw new ArgumentException("TIA V19 project file path must be absolute.", nameof(projects));
             }
 
             if (catalog.ContainsKey(project.ProjectId))
             {
-                throw new ArgumentException("TIA V18 project IDs must be unique.", nameof(projects));
+                throw new ArgumentException("TIA V19 project IDs must be unique.", nameof(projects));
             }
 
             catalog.Add(project.ProjectId, project);
@@ -59,7 +59,7 @@ public sealed class TiaV18ProjectCatalog
         this.projects = catalog;
     }
 
-    public bool TryGetProject(string projectId, out TiaV18ProjectDefinition? project)
+    public bool TryGetProject(string projectId, out TiaV19ProjectDefinition? project)
     {
         ThrowIfNullOrWhiteSpace(projectId, nameof(projectId));
         return projects.TryGetValue(projectId, out project);
@@ -80,7 +80,7 @@ public sealed class TiaV18ProjectCatalog
     }
 }
 
-public sealed record TiaV18ProjectContextResponse(
+public sealed record TiaV19ProjectContextResponse(
     string RequestId,
     string? ProjectId,
     string? SnapshotHash,
@@ -89,7 +89,7 @@ public sealed record TiaV18ProjectContextResponse(
     public bool IsSuccess => ProjectId is not null && SnapshotHash is not null && Error is null;
 }
 
-public static class TiaV18ProjectSnapshot
+public static class TiaV19ProjectSnapshot
 {
     public static string Calculate(
         string projectId,

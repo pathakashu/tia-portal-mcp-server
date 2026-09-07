@@ -1,14 +1,14 @@
-using EngineerPc.Tia.V18.Protocol;
+using EngineerPc.Tia.V19.Protocol;
 
-namespace EngineerPc.Tia.V18.Protocol.Tests;
+namespace EngineerPc.Tia.V19.Protocol.Tests;
 
-public sealed class TiaV18ProjectContextProtocolTests
+public sealed class TiaV19ProjectContextProtocolTests
 {
     [Fact]
     public void ProjectCatalog_ResolvesOnlyConfiguredAbsoluteProjectPaths()
     {
-        var project = new TiaV18ProjectDefinition("project-1", Path.GetFullPath("project-1.ap18"));
-        var catalog = new TiaV18ProjectCatalog([project]);
+        var project = new TiaV19ProjectDefinition("project-1", Path.GetFullPath("project-1.ap19"));
+        var catalog = new TiaV19ProjectCatalog([project]);
 
         var isConfigured = catalog.TryGetProject("project-1", out var resolvedProject);
         var isUnknown = catalog.TryGetProject("project-2", out var unknownProject);
@@ -22,12 +22,12 @@ public sealed class TiaV18ProjectContextProtocolTests
     [Fact]
     public void ProjectCatalog_RejectsDuplicateProjectIdsAndRelativePaths()
     {
-        Assert.Throws<ArgumentException>(() => new TiaV18ProjectCatalog([
-            new TiaV18ProjectDefinition("project-1", Path.GetFullPath("first.ap18")),
-            new TiaV18ProjectDefinition("project-1", Path.GetFullPath("second.ap18"))
+        Assert.Throws<ArgumentException>(() => new TiaV19ProjectCatalog([
+            new TiaV19ProjectDefinition("project-1", Path.GetFullPath("first.ap19")),
+            new TiaV19ProjectDefinition("project-1", Path.GetFullPath("second.ap19"))
         ]));
-        Assert.Throws<ArgumentException>(() => new TiaV18ProjectCatalog([
-            new TiaV18ProjectDefinition("project-1", "relative.ap18")
+        Assert.Throws<ArgumentException>(() => new TiaV19ProjectCatalog([
+            new TiaV19ProjectDefinition("project-1", "relative.ap19")
         ]));
     }
 
@@ -36,9 +36,9 @@ public sealed class TiaV18ProjectContextProtocolTests
     {
         var timestamp = new DateTime(2026, 9, 7, 12, 0, 0, DateTimeKind.Utc);
 
-        var first = TiaV18ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap18", timestamp, 128, "18.0");
-        var second = TiaV18ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap18", timestamp, 128, "18.0");
-        var changed = TiaV18ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap18", timestamp, 129, "18.0");
+        var first = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 128, "19.0");
+        var second = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 128, "19.0");
+        var changed = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 129, "19.0");
 
         Assert.Equal(first, second);
         Assert.NotEqual(first, changed);
@@ -47,7 +47,7 @@ public sealed class TiaV18ProjectContextProtocolTests
     [Fact]
     public void WorkerRequest_ContainsOnlyProtocolMetadataConfiguredProjectIdAndCatalogPageParameters()
     {
-        var request = new TiaV18WorkerRequest("1.0", "request-1", "get_block_catalog", "project-1", 100, 25);
+        var request = new TiaV19WorkerRequest("1.0", "request-1", "get_block_catalog", "project-1", 100, 25);
 
         Assert.Equal("1.0", request.ProtocolVersion);
         Assert.Equal("request-1", request.RequestId);
@@ -60,14 +60,14 @@ public sealed class TiaV18ProjectContextProtocolTests
     [Fact]
     public void BlockCatalogResponse_ContainsOnlySnapshotAndReadOnlyBlockMetadata()
     {
-        var response = new TiaV18BlockCatalogResponse(
+        var response = new TiaV19BlockCatalogResponse(
             "request-1",
             "project-1",
             "snapshot-1",
-            [new TiaV18BlockDefinition("PLC_1", "FB_Motor", "", 1, "Scl")],
+            [new TiaV19BlockDefinition("PLC_1", "FB_Motor", "", 1, "Scl")],
             3,
             1,
-            TiaV18BlockCatalogErrorCode.None,
+            TiaV19BlockCatalogErrorCode.None,
             null);
 
         Assert.True(response.IsSuccess);

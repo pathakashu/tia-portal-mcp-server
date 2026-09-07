@@ -14,8 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EngineerPc.Tia.V18.Protocol\EngineerPc.Tia.V18.Protocol.csproj" />
-    <ProjectReference Include="..\EngineerPc.Tia.V18\EngineerPc.Tia.V18.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.V19.Protocol\EngineerPc.Tia.V19.Protocol.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.V19\EngineerPc.Tia.V19.csproj" />
   </ItemGroup>
 
 </Project>

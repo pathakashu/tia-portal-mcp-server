@@ -8,7 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EngineerPc.Tia.Abstractions\EngineerPc.Tia.Abstractions.csproj" />
-    <ProjectReference Include="..\EngineerPc.Tia.V18.Protocol\EngineerPc.Tia.V18.Protocol.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.V19.Protocol\EngineerPc.Tia.V19.Protocol.csproj" />
   </ItemGroup>
 
 </Project>

@@ -2,17 +2,17 @@ using System.Text.Json;
 using EngineerPc.Contracts;
 using EngineerPc.Engineering.Ir;
 using EngineerPc.Tia.Abstractions;
-using EngineerPc.Tia.V18.Client;
-using EngineerPc.Tia.V18.Protocol;
+using EngineerPc.Tia.V19.Client;
+using EngineerPc.Tia.V19.Protocol;
 
-namespace EngineerPc.Tia.V18.Client.Tests;
+namespace EngineerPc.Tia.V19.Client.Tests;
 
-public sealed class TiaV18WorkerClientTests : IDisposable
+public sealed class TiaV19WorkerClientTests : IDisposable
 {
     private readonly string workerExecutablePath = Path.ChangeExtension(Path.GetTempFileName(), ".exe");
     private readonly string configurationPath = Path.GetTempFileName();
 
-    public TiaV18WorkerClientTests()
+    public TiaV19WorkerClientTests()
     {
         File.Move(Path.ChangeExtension(workerExecutablePath, ".tmp"), workerExecutablePath);
     }
@@ -21,22 +21,22 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetProjectContextAsync_WithMatchingWorkerResponse_ReturnsProjectContext()
     {
         var transport = new ControlledWorkerTransport(request => Success(request, "project-1", "snapshot-1"));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         var result = await client.GetProjectContextAsync("project-1", CancellationToken.None);
 
         Assert.Equal(new ProjectContext("project-1", "snapshot-1"), result);
         var request = Assert.Single(transport.Requests);
-        Assert.Equal(TiaV18WorkerProtocol.Version, request.ProtocolVersion);
-        Assert.Equal(TiaV18WorkerProtocol.GetProjectContextMethod, request.Method);
+        Assert.Equal(TiaV19WorkerProtocol.Version, request.ProtocolVersion);
+        Assert.Equal(TiaV19WorkerProtocol.GetProjectContextMethod, request.Method);
     }
 
     [Fact]
     public async Task GetProjectContextAsync_WithWorkerError_ReturnsNoContext()
     {
         var transport = new ControlledWorkerTransport(request => JsonSerializer.Serialize(
-            new TiaV18ProjectContextResponse(request.RequestId, null, null, "The configured TIA V18 project was not found.")));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+            new TiaV19ProjectContextResponse(request.RequestId, null, null, "The configured TIA V19 project was not found.")));
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         var result = await client.GetProjectContextAsync("unknown", CancellationToken.None);
 
@@ -47,8 +47,8 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetProjectContextAsync_WithMismatchedResponseId_RejectsWorkerResponse()
     {
         var transport = new ControlledWorkerTransport(_ => JsonSerializer.Serialize(
-            new TiaV18ProjectContextResponse("other-request", "project-1", "snapshot-1", null)));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+            new TiaV19ProjectContextResponse("other-request", "project-1", "snapshot-1", null)));
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             client.GetProjectContextAsync("project-1", CancellationToken.None));
@@ -58,7 +58,7 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetProjectContextAsync_SerializesWorkerRequests()
     {
         var transport = new ControlledWorkerTransport(request => Success(request, request.ProjectId!, "snapshot"), TimeSpan.FromMilliseconds(25));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         await Task.WhenAll(
             client.GetProjectContextAsync("project-1", CancellationToken.None),
@@ -72,17 +72,17 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetBlockCatalogPageAsync_WithMatchingWorkerResponse_ReturnsReadOnlyBlockMetadata()
     {
         var transport = new ControlledWorkerTransport(request => JsonSerializer.Serialize(
-            new TiaV18BlockCatalogResponse(
+            new TiaV19BlockCatalogResponse(
                 request.RequestId,
                 "project-1",
                 "snapshot-1",
-                [new TiaV18BlockDefinition("PLC_1", "FB_Motor", "", 1, "Scl")],
+                [new TiaV19BlockDefinition("PLC_1", "FB_Motor", "", 1, "Scl")],
                 2,
                 1,
-                TiaV18BlockCatalogErrorCode.None,
+                TiaV19BlockCatalogErrorCode.None,
                 null),
             new JsonSerializerOptions(JsonSerializerDefaults.Web)));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         var result = await client.GetBlockCatalogPageAsync("project-1", 0, 1, null, CancellationToken.None);
 
@@ -91,7 +91,7 @@ public sealed class TiaV18WorkerClientTests : IDisposable
         Assert.Equal(2, result.TotalBlockCount);
         Assert.Equal(1, result.NextStartIndex);
         var request = Assert.Single(transport.Requests);
-        Assert.Equal(TiaV18WorkerProtocol.GetBlockCatalogMethod, request.Method);
+        Assert.Equal(TiaV19WorkerProtocol.GetBlockCatalogMethod, request.Method);
         Assert.Equal(0, request.BlockCatalogStartIndex);
         Assert.Equal(1, request.BlockCatalogMaximumBlockCount);
         Assert.Null(request.BlockCatalogExpectedSnapshotHash);
@@ -101,8 +101,8 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetBlockCatalogPageAsync_WithWorkerError_ReturnsNoCatalog()
     {
         var transport = new ControlledWorkerTransport(request => JsonSerializer.Serialize(
-            new TiaV18BlockCatalogResponse(request.RequestId, null, null, [], null, null, TiaV18BlockCatalogErrorCode.None, "The configured TIA V18 project was not found.")));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+            new TiaV19BlockCatalogResponse(request.RequestId, null, null, [], null, null, TiaV19BlockCatalogErrorCode.None, "The configured TIA V19 project was not found.")));
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         var result = await client.GetBlockCatalogPageAsync("unknown", 0, 10, null, CancellationToken.None);
 
@@ -113,17 +113,17 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetBlockCatalogPageAsync_WithNonProgressingContinuation_RejectsWorkerResponse()
     {
         var transport = new ControlledWorkerTransport(request => JsonSerializer.Serialize(
-            new TiaV18BlockCatalogResponse(
+            new TiaV19BlockCatalogResponse(
                 request.RequestId,
                 "project-1",
                 "snapshot-1",
                 [],
                 2,
                 0,
-                TiaV18BlockCatalogErrorCode.None,
+                TiaV19BlockCatalogErrorCode.None,
                 null),
             new JsonSerializerOptions(JsonSerializerDefaults.Web)));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             client.GetBlockCatalogPageAsync("project-1", 0, 1, null, CancellationToken.None));
@@ -133,20 +133,20 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetBlockCatalogPageAsync_WithPageBeyondDeclaredTotal_RejectsWorkerResponse()
     {
         var transport = new ControlledWorkerTransport(request => JsonSerializer.Serialize(
-            new TiaV18BlockCatalogResponse(
+            new TiaV19BlockCatalogResponse(
                 request.RequestId,
                 "project-1",
                 "snapshot-1",
                 [
-                    new TiaV18BlockDefinition("PLC_1", "FB_Motor", "", 1, "Scl"),
-                    new TiaV18BlockDefinition("PLC_1", "FC_Motor", "", 2, "Scl")
+                    new TiaV19BlockDefinition("PLC_1", "FB_Motor", "", 1, "Scl"),
+                    new TiaV19BlockDefinition("PLC_1", "FC_Motor", "", 2, "Scl")
                 ],
                 1,
                 null,
-                TiaV18BlockCatalogErrorCode.None,
+                TiaV19BlockCatalogErrorCode.None,
                 null),
             new JsonSerializerOptions(JsonSerializerDefaults.Web)));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             client.GetBlockCatalogPageAsync("project-1", 0, 2, null, CancellationToken.None));
@@ -156,17 +156,17 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task GetBlockCatalogPageAsync_WithChangedSnapshot_RejectsContinuation()
     {
         var transport = new ControlledWorkerTransport(request => JsonSerializer.Serialize(
-            new TiaV18BlockCatalogResponse(
+            new TiaV19BlockCatalogResponse(
                 request.RequestId,
                 null,
                 null,
                 [],
                 null,
                 null,
-                TiaV18BlockCatalogErrorCode.SnapshotChanged,
-                "The configured TIA V18 project snapshot has changed."),
+                TiaV19BlockCatalogErrorCode.SnapshotChanged,
+                "The configured TIA V19 project snapshot has changed."),
             new JsonSerializerOptions(JsonSerializerDefaults.Web)));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         await Assert.ThrowsAsync<ProjectBlockCatalogSnapshotChangedException>(() =>
             client.GetBlockCatalogPageAsync("project-1", 1, 1, "snapshot-1", CancellationToken.None));
@@ -176,29 +176,29 @@ public sealed class TiaV18WorkerClientTests : IDisposable
     public async Task CreateBlockAsync_DoesNotDispatchAWriteToTheWorker()
     {
         var transport = new ControlledWorkerTransport(request => Success(request, "project-1", "snapshot-1"));
-        using var client = new TiaV18WorkerClient(CreateOptions(), transport);
+        using var client = new TiaV19WorkerClient(CreateOptions(), transport);
 
         var result = await client.CreateBlockAsync(CreateOperation(), CancellationToken.None);
 
         Assert.False(result.IsSuccess);
-        Assert.Contains("TIA Portal V18 block creation is unavailable through the worker client.", result.Errors);
+        Assert.Contains("TIA Portal V19 block creation is unavailable through the worker client.", result.Errors);
         Assert.Empty(transport.Requests);
     }
 
     [Fact]
     public void OptionsValidator_RejectsNoncanonicalOrMissingWorkerPaths()
     {
-        var options = new TiaV18WorkerClientOptions(
+        var options = new TiaV19WorkerClientOptions(
             Path.Combine(Path.GetDirectoryName(workerExecutablePath)!, ".", Path.GetFileName(workerExecutablePath)),
             "missing.json",
             TimeSpan.Zero);
 
-        var validation = TiaV18WorkerClientOptionsValidator.Validate(options);
+        var validation = TiaV19WorkerClientOptionsValidator.Validate(options);
 
         Assert.False(validation.IsValid);
-        Assert.Contains("TIA V18 worker executable path must be canonical.", validation.Errors);
-        Assert.Contains("TIA V18 worker configuration path must be absolute.", validation.Errors);
-        Assert.Contains("TIA V18 worker request timeout must be between 1 second and 5 minutes.", validation.Errors);
+        Assert.Contains("TIA V19 worker executable path must be canonical.", validation.Errors);
+        Assert.Contains("TIA V19 worker configuration path must be absolute.", validation.Errors);
+        Assert.Contains("TIA V19 worker request timeout must be between 1 second and 5 minutes.", validation.Errors);
     }
 
     public void Dispose()
@@ -207,13 +207,13 @@ public sealed class TiaV18WorkerClientTests : IDisposable
         File.Delete(configurationPath);
     }
 
-    private TiaV18WorkerClientOptions CreateOptions() => new(
+    private TiaV19WorkerClientOptions CreateOptions() => new(
         workerExecutablePath,
         configurationPath,
         TimeSpan.FromSeconds(5));
 
-    private static string Success(TiaV18WorkerRequest request, string projectId, string snapshotHash) => JsonSerializer.Serialize(
-        new TiaV18ProjectContextResponse(request.RequestId, projectId, snapshotHash, null),
+    private static string Success(TiaV19WorkerRequest request, string projectId, string snapshotHash) => JsonSerializer.Serialize(
+        new TiaV19ProjectContextResponse(request.RequestId, projectId, snapshotHash, null),
         new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
     private static CreateBlockOperation CreateOperation() => new(
@@ -226,19 +226,19 @@ public sealed class TiaV18WorkerClientTests : IDisposable
         new BlockInterface([]));
 
     private sealed class ControlledWorkerTransport(
-        Func<TiaV18WorkerRequest, string> responseFactory,
-        TimeSpan? delay = null) : ITiaV18WorkerTransport
+        Func<TiaV19WorkerRequest, string> responseFactory,
+        TimeSpan? delay = null) : ITiaV19WorkerTransport
     {
         private int activeRequests;
         private int maximumConcurrentRequests;
 
-        public List<TiaV18WorkerRequest> Requests { get; } = [];
+        public List<TiaV19WorkerRequest> Requests { get; } = [];
 
         public int MaximumConcurrentRequests => maximumConcurrentRequests;
 
         public async Task<string> SendAsync(
-            TiaV18WorkerClientOptions options,
-            TiaV18WorkerRequest request,
+            TiaV19WorkerClientOptions options,
+            TiaV19WorkerRequest request,
             CancellationToken cancellationToken)
         {
             var activeRequestCount = Interlocked.Increment(ref activeRequests);

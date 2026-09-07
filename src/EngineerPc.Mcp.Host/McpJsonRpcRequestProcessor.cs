@@ -216,7 +216,7 @@ public sealed class McpJsonRpcRequestProcessor
             {
                 name = "get_project_context",
                 title = "Get Project Context",
-                description = "Reads the snapshot context for a deployment-configured TIA V18 project.",
+                description = "Reads the snapshot context for a deployment-configured TIA V19 project.",
                 inputSchema = GetProjectContextInputSchema()
             });
         }
@@ -226,7 +226,7 @@ public sealed class McpJsonRpcRequestProcessor
             {
                 name = "get_block_catalog",
                 title = "Get Block Catalog",
-                description = "Reads the PLC block catalog for a deployment-configured TIA V18 project.",
+                description = "Reads the PLC block catalog for a deployment-configured TIA V19 project.",
                 inputSchema = GetBlockCatalogInputSchema()
             });
         }

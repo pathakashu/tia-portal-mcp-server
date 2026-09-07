@@ -9,8 +9,8 @@
 7. Policy and risk are evaluated.
 8. A deterministic preview/diff is created.
 9. Human approval is requested where required.
-10. Transaction manager executes through TiaV18Adapter.
-11. Adapter invokes TIA Openness V18.
+10. Transaction manager executes through TiaV19Adapter.
+11. Adapter invokes TIA Openness V19.
 12. Post-execution validation runs.
 13. Audit events are persisted.
 14. Structured result/progress returns through MCP.

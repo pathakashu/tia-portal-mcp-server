@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
-    <TiaV18PublicApiDirectory Condition="'$(TiaV18PublicApiDirectory)' == ''">C:\Program Files\Siemens\Automation\Portal V18\PublicAPI\V18</TiaV18PublicApiDirectory>
+    <TiaV19PublicApiDirectory Condition="'$(TiaV19PublicApiDirectory)' == ''">C:\Program Files\Siemens\Automation\Portal V19\PublicAPI\V19</TiaV19PublicApiDirectory>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,12 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EngineerPc.Tia.V18.Protocol\EngineerPc.Tia.V18.Protocol.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.V19.Protocol\EngineerPc.Tia.V19.Protocol.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Siemens.Engineering">
-      <HintPath>$(TiaV18PublicApiDirectory)\Siemens.Engineering.dll</HintPath>
+      <HintPath>$(TiaV19PublicApiDirectory)\Siemens.Engineering.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

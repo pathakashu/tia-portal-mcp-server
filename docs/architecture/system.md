@@ -2,7 +2,7 @@
 
 ## Target
 
-Engineer-PC execution platform for AI-assisted Siemens TIA Portal V18 engineering.
+Engineer-PC execution platform for AI-assisted Siemens TIA Portal V19 engineering.
 
 ```mermaid
 flowchart TB
@@ -18,9 +18,9 @@ flowchart TB
     MODEL[Project Model]
     GRAPH[Project Graph]
     SEARCH[Project Search]
-    ADAPTER[TIA V18 Adapter]
-    OPENNESS[TIA Openness V18]
-    TIA[TIA Portal V18]
+    ADAPTER[TIA V19 Adapter]
+    OPENNESS[TIA Openness V19]
+    TIA[TIA Portal V19]
     PLC[PLC]
     HMI[HMI]
     HW[Hardware]
@@ -43,4 +43,4 @@ flowchart TB
 
 ## Core rule
 
-Only `EngineerPc.Tia.V18` may reference Siemens.Engineering.
+Only `EngineerPc.Tia.V19` may reference Siemens.Engineering.

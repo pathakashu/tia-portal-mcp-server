@@ -19,6 +19,6 @@ public sealed class PlanningOnlyTiaAdapter : ITiaAdapter
         cancellationToken.ThrowIfCancellationRequested();
         return Task.FromResult(new TiaAdapterExecutionResult(
             null,
-            ["Execution is unavailable until a TIA Portal V18 adapter is configured."]));
+            ["Execution is unavailable until a TIA Portal V19 adapter is configured."]));
     }
 }

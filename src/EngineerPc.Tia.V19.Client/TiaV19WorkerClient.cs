@@ -2,29 +2,29 @@ using System.Text.Json;
 using EngineerPc.Contracts;
 using EngineerPc.Engineering.Ir;
 using EngineerPc.Tia.Abstractions;
-using EngineerPc.Tia.V18.Protocol;
+using EngineerPc.Tia.V19.Protocol;
 
-namespace EngineerPc.Tia.V18.Client;
+namespace EngineerPc.Tia.V19.Client;
 
-public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader, IDisposable
+public sealed class TiaV19WorkerClient : ITiaAdapter, IProjectBlockCatalogReader, IDisposable
 {
-    private readonly TiaV18WorkerClientOptions options;
-    private readonly ITiaV18WorkerTransport transport;
+    private readonly TiaV19WorkerClientOptions options;
+    private readonly ITiaV19WorkerTransport transport;
     private readonly SemaphoreSlim requestGate = new(1, 1);
     private bool disposed;
 
-    public TiaV18WorkerClient(
-        TiaV18WorkerClientOptions options,
-        ITiaV18WorkerTransport? transport = null)
+    public TiaV19WorkerClient(
+        TiaV19WorkerClientOptions options,
+        ITiaV19WorkerTransport? transport = null)
     {
-        var validation = TiaV18WorkerClientOptionsValidator.Validate(options);
+        var validation = TiaV19WorkerClientOptionsValidator.Validate(options);
         if (!validation.IsValid)
         {
             throw new ArgumentException(string.Join(" ", validation.Errors), nameof(options));
         }
 
         this.options = options;
-        this.transport = transport ?? new TiaV18WorkerProcessTransport();
+        this.transport = transport ?? new TiaV19WorkerProcessTransport();
     }
 
     public async Task<ProjectContext?> GetProjectContextAsync(string projectId, CancellationToken cancellationToken)
@@ -38,17 +38,17 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
         await requestGate.WaitAsync(cancellationToken);
         try
         {
-            var request = new TiaV18WorkerRequest(
-                TiaV18WorkerProtocol.Version,
+            var request = new TiaV19WorkerRequest(
+                TiaV19WorkerProtocol.Version,
                 Guid.NewGuid().ToString("N"),
-                TiaV18WorkerProtocol.GetProjectContextMethod,
+                TiaV19WorkerProtocol.GetProjectContextMethod,
                 projectId);
             var responsePayload = await transport.SendAsync(options, request, cancellationToken);
             var response = DeserializeResponse(responsePayload);
 
             if (!string.Equals(response.RequestId, request.RequestId, StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("TIA V18 worker response did not match the request ID.");
+                throw new InvalidOperationException("TIA V19 worker response did not match the request ID.");
             }
 
             if (response.Error is not null)
@@ -59,7 +59,7 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
             if (!string.Equals(response.ProjectId, projectId, StringComparison.Ordinal) ||
                 string.IsNullOrWhiteSpace(response.SnapshotHash))
             {
-                throw new InvalidOperationException("TIA V18 worker response is not a valid project context.");
+                throw new InvalidOperationException("TIA V19 worker response is not a valid project context.");
             }
 
             return new ProjectContext(response.ProjectId!, response.SnapshotHash);
@@ -80,7 +80,7 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
 
         return Task.FromResult(new TiaAdapterExecutionResult(
             null,
-            ["TIA Portal V18 block creation is unavailable through the worker client."]));
+            ["TIA Portal V19 block creation is unavailable through the worker client."]));
     }
 
     public async Task<ProjectBlockCatalogPage?> GetBlockCatalogPageAsync(
@@ -101,7 +101,7 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
             throw new ArgumentOutOfRangeException(nameof(startIndex));
         }
 
-        if (maximumBlockCount <= 0 || maximumBlockCount > TiaV18WorkerProtocol.MaximumBlockCatalogBlockCount)
+        if (maximumBlockCount <= 0 || maximumBlockCount > TiaV19WorkerProtocol.MaximumBlockCatalogBlockCount)
         {
             throw new ArgumentOutOfRangeException(nameof(maximumBlockCount));
         }
@@ -114,10 +114,10 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
         await requestGate.WaitAsync(cancellationToken);
         try
         {
-            var request = new TiaV18WorkerRequest(
-                TiaV18WorkerProtocol.Version,
+            var request = new TiaV19WorkerRequest(
+                TiaV19WorkerProtocol.Version,
                 Guid.NewGuid().ToString("N"),
-                TiaV18WorkerProtocol.GetBlockCatalogMethod,
+                TiaV19WorkerProtocol.GetBlockCatalogMethod,
                 projectId,
                 startIndex,
                 maximumBlockCount,
@@ -127,12 +127,12 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
 
             if (!string.Equals(response.RequestId, request.RequestId, StringComparison.Ordinal))
             {
-                throw new InvalidOperationException("TIA V18 worker response did not match the request ID.");
+                throw new InvalidOperationException("TIA V19 worker response did not match the request ID.");
             }
 
             if (response.Error is not null)
             {
-                if (response.ErrorCode == TiaV18BlockCatalogErrorCode.SnapshotChanged)
+                if (response.ErrorCode == TiaV19BlockCatalogErrorCode.SnapshotChanged)
                 {
                     throw new ProjectBlockCatalogSnapshotChangedException();
                 }
@@ -140,9 +140,9 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
                 return null;
             }
 
-            if (response.ErrorCode != TiaV18BlockCatalogErrorCode.None)
+            if (response.ErrorCode != TiaV19BlockCatalogErrorCode.None)
             {
-                throw new InvalidOperationException("TIA V18 worker returned an invalid block catalog error code.");
+                throw new InvalidOperationException("TIA V19 worker returned an invalid block catalog error code.");
             }
 
             if (!string.Equals(response.ProjectId, projectId, StringComparison.Ordinal) ||
@@ -160,7 +160,7 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
                     block.Number < 0 ||
                     string.IsNullOrWhiteSpace(block.ProgrammingLanguage)))
             {
-                throw new InvalidOperationException("TIA V18 worker response is not a valid block catalog.");
+                throw new InvalidOperationException("TIA V19 worker response is not a valid block catalog.");
             }
 
             var expectedNextStartIndex = (long)startIndex + response.Blocks.Count < response.TotalBlockCount
@@ -169,7 +169,7 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
             if (response.NextStartIndex != expectedNextStartIndex ||
                 response.NextStartIndex is not null && response.NextStartIndex <= startIndex)
             {
-                throw new InvalidOperationException("TIA V18 worker response has an invalid block catalog continuation.");
+                throw new InvalidOperationException("TIA V19 worker response has an invalid block catalog continuation.");
             }
 
             return new ProjectBlockCatalogPage(
@@ -200,33 +200,33 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
         disposed = true;
     }
 
-    private static TiaV18ProjectContextResponse DeserializeResponse(string responsePayload)
+    private static TiaV19ProjectContextResponse DeserializeResponse(string responsePayload)
     {
         try
         {
-            return JsonSerializer.Deserialize<TiaV18ProjectContextResponse>(
+            return JsonSerializer.Deserialize<TiaV19ProjectContextResponse>(
                 responsePayload,
                 new JsonSerializerOptions(JsonSerializerDefaults.Web))
-                ?? throw new InvalidOperationException("TIA V18 worker returned an empty response.");
+                ?? throw new InvalidOperationException("TIA V19 worker returned an empty response.");
         }
         catch (JsonException exception)
         {
-            throw new InvalidOperationException("TIA V18 worker returned invalid JSON.", exception);
+            throw new InvalidOperationException("TIA V19 worker returned invalid JSON.", exception);
         }
     }
 
-    private static TiaV18BlockCatalogResponse DeserializeBlockCatalogResponse(string responsePayload)
+    private static TiaV19BlockCatalogResponse DeserializeBlockCatalogResponse(string responsePayload)
     {
         try
         {
-            return JsonSerializer.Deserialize<TiaV18BlockCatalogResponse>(
+            return JsonSerializer.Deserialize<TiaV19BlockCatalogResponse>(
                 responsePayload,
                 new JsonSerializerOptions(JsonSerializerDefaults.Web))
-                ?? throw new InvalidOperationException("TIA V18 worker returned an empty response.");
+                ?? throw new InvalidOperationException("TIA V19 worker returned an empty response.");
         }
         catch (JsonException exception)
         {
-            throw new InvalidOperationException("TIA V18 worker returned invalid JSON.", exception);
+            throw new InvalidOperationException("TIA V19 worker returned invalid JSON.", exception);
         }
     }
 
@@ -234,7 +234,7 @@ public sealed class TiaV18WorkerClient : ITiaAdapter, IProjectBlockCatalogReader
     {
         if (disposed)
         {
-            throw new ObjectDisposedException(nameof(TiaV18WorkerClient));
+            throw new ObjectDisposedException(nameof(TiaV19WorkerClient));
         }
     }
 }

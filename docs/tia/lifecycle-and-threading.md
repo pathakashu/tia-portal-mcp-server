@@ -1,4 +1,4 @@
-# TIA V18 Lifecycle and Execution Boundary
+# TIA V19 Lifecycle and Execution Boundary
 
 Transport callbacks must never directly manipulate Openness objects.
 
@@ -9,8 +9,8 @@ MCP request
   -> Engineering Engine
   -> transaction
   -> TIA command queue
-  -> TiaV18Adapter
-  -> Openness V18
+  -> TiaV19Adapter
+  -> Openness V19
 ```
 
 Writes should be serialized per TIA project.

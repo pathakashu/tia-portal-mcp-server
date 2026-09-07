@@ -12,7 +12,7 @@
     <ProjectReference Include="..\EngineerPc.Mcp\EngineerPc.Mcp.csproj" />
     <ProjectReference Include="..\EngineerPc.Security\EngineerPc.Security.csproj" />
     <ProjectReference Include="..\EngineerPc.Tia.Abstractions\EngineerPc.Tia.Abstractions.csproj" />
-    <ProjectReference Include="..\EngineerPc.Tia.V18.Client\EngineerPc.Tia.V18.Client.csproj" />
+    <ProjectReference Include="..\EngineerPc.Tia.V19.Client\EngineerPc.Tia.V19.Client.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

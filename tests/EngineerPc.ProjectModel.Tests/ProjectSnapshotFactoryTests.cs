@@ -19,8 +19,8 @@ public sealed class ProjectSnapshotFactoryTests
             ["language"] = "SCL"
         });
 
-        var first = ProjectSnapshotFactory.Create("project-1", "V18", CapturedAtUtc, [motorBlock, safetyBlock]);
-        var second = ProjectSnapshotFactory.Create("project-1", "V18", CapturedAtUtc, [safetyBlock, motorBlock]);
+        var first = ProjectSnapshotFactory.Create("project-1", "V19", CapturedAtUtc, [motorBlock, safetyBlock]);
+        var second = ProjectSnapshotFactory.Create("project-1", "V19", CapturedAtUtc, [safetyBlock, motorBlock]);
 
         Assert.Equal(first.SnapshotHash, second.SnapshotHash);
     }
@@ -30,12 +30,12 @@ public sealed class ProjectSnapshotFactoryTests
     {
         var first = ProjectSnapshotFactory.Create(
             "project-1",
-            "V18",
+            "V19",
             CapturedAtUtc,
             [CreateArtifact("block-motor", "FB_Motor", "block-source-1", EmptyMetadata)]);
         var second = ProjectSnapshotFactory.Create(
             "project-1",
-            "V18",
+            "V19",
             CapturedAtUtc,
             [CreateArtifact("block-motor", "FB_Motor", "block-source-2", EmptyMetadata)]);
 
@@ -47,7 +47,7 @@ public sealed class ProjectSnapshotFactoryTests
     {
         var exception = Assert.Throws<ArgumentException>(() => ProjectSnapshotFactory.Create(
             "project-1",
-            "V18",
+            "V19",
             CapturedAtUtc,
             [
                 CreateArtifact("block-motor", "FB_Motor", "block-source-1", EmptyMetadata),

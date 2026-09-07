@@ -1,4 +1,4 @@
-# Four-Phase Mapping — TIA Portal V18 Only
+# Four-Phase Mapping — TIA Portal V19 Only
 
 ## Phase 1 — MVP
 
@@ -37,4 +37,4 @@
 - XML/AML ingestion
 - migration framework
 
-All four phases target TIA Portal V18 only.
+All four phases target TIA Portal V19 only.

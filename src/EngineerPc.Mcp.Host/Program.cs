@@ -13,13 +13,13 @@ using EngineerPc.Mcp;
 using EngineerPc.Mcp.Host;
 using EngineerPc.Security;
 using EngineerPc.Tia.Abstractions;
-using EngineerPc.Tia.V18.Client;
+using EngineerPc.Tia.V19.Client;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
 
 var builder = WebApplication.CreateBuilder(args);
 var transportOptions = builder.Configuration.GetSection("McpTransport").Get<McpTransportOptions>() ?? new McpTransportOptions();
 var auditOptions = builder.Configuration.GetSection("McpAudit").Get<McpAuditOptions>() ?? new McpAuditOptions();
-var tiaV18WorkerOptions = builder.Configuration.GetSection("TiaV18Worker").Get<TiaV18WorkerHostOptions>() ?? new TiaV18WorkerHostOptions();
+var tiaV19WorkerOptions = builder.Configuration.GetSection("TiaV19Worker").Get<TiaV19WorkerHostOptions>() ?? new TiaV19WorkerHostOptions();
 var optionValidation = McpTransportOptionsValidator.Validate(transportOptions);
 if (!optionValidation.IsValid)
 {
@@ -72,13 +72,13 @@ app.MapGet("/health", () => Results.Ok(new { status = "ready" }));
 var timeProvider = TimeProvider.System;
 var sessionManager = new McpSessionManager(timeProvider);
 var engineeringAuditSink = new JsonLinesEngineeringAuditSink(auditOptions.EngineeringFilePath);
-var tiaV18WorkerClient = tiaV18WorkerOptions.Enabled
-	? new TiaV18WorkerClient(tiaV18WorkerOptions.ToClientOptions())
+var tiaV19WorkerClient = tiaV19WorkerOptions.Enabled
+	? new TiaV19WorkerClient(tiaV19WorkerOptions.ToClientOptions())
 	: null;
-ITiaAdapter projectContextAdapter = tiaV18WorkerClient is not null
-	? tiaV18WorkerClient
+ITiaAdapter projectContextAdapter = tiaV19WorkerClient is not null
+	? tiaV19WorkerClient
 	: new PlanningOnlyTiaAdapter();
-if (tiaV18WorkerClient is IDisposable disposableProjectContextAdapter)
+if (tiaV19WorkerClient is IDisposable disposableProjectContextAdapter)
 {
 	app.Lifetime.ApplicationStopping.Register(disposableProjectContextAdapter.Dispose);
 }
@@ -102,7 +102,7 @@ var projectContextReadService = new ProjectContextReadService(
 	engineeringAuditSink,
 	timeProvider);
 var projectBlockCatalogReadService = new ProjectBlockCatalogReadService(
-	tiaV18WorkerClient,
+	tiaV19WorkerClient,
 	engineeringAuditSink,
 	timeProvider);
 var authorizationService = new ScopeAuthorizationService(
@@ -124,8 +124,8 @@ var requestProcessor = new McpJsonRpcRequestProcessor(
 		projectBlockCatalogReadService,
 		authorizationService,
 		timeProvider),
-	tiaV18WorkerOptions.Enabled,
-	tiaV18WorkerOptions.Enabled && tiaV18WorkerOptions.EnableBlockCatalogRead);
+	tiaV19WorkerOptions.Enabled,
+	tiaV19WorkerOptions.Enabled && tiaV19WorkerOptions.EnableBlockCatalogRead);
 
 if (transportOptions.AllowInsecureLocalhost)
 {

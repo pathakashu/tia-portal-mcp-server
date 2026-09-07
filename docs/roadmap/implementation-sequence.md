@@ -12,7 +12,7 @@ Create domain contracts and Engineering IR.
 
 Create orchestration, policy, validation, approval, and transactions.
 
-## Step 3 — Mock TIA V18
+## Step 3 — Mock TIA V19
 
 Prove end-to-end execution without Siemens software.
 
@@ -28,10 +28,10 @@ Add typed tool routing and session management.
 
 Add HTTPS Streamable HTTP, mTLS, authorization, and audit hardening.
 
-## Step 7 — Real V18 integration
+## Step 7 — Real V19 integration
 
-Connect only TIA Portal V18 Openness.
+Connect only TIA Portal V19 Openness.
 
 ## Step 8 — Phase features
 
-Implement Phase 1 through Phase 4 using the same V18 execution core.
+Implement Phase 1 through Phase 4 using the same V19 execution core.

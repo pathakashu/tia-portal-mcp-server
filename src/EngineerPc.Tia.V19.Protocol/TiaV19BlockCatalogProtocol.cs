@@ -1,26 +1,26 @@
-namespace EngineerPc.Tia.V18.Protocol;
+namespace EngineerPc.Tia.V19.Protocol;
 
-public enum TiaV18BlockCatalogErrorCode
+public enum TiaV19BlockCatalogErrorCode
 {
     None,
     SnapshotChanged
 }
 
-public sealed record TiaV18BlockDefinition(
+public sealed record TiaV19BlockDefinition(
     string ControllerName,
     string Name,
     string Namespace,
     int Number,
     string ProgrammingLanguage);
 
-public sealed record TiaV18BlockCatalogResponse(
+public sealed record TiaV19BlockCatalogResponse(
     string RequestId,
     string? ProjectId,
     string? SnapshotHash,
-    IReadOnlyList<TiaV18BlockDefinition> Blocks,
+    IReadOnlyList<TiaV19BlockDefinition> Blocks,
     int? TotalBlockCount,
     int? NextStartIndex,
-    TiaV18BlockCatalogErrorCode ErrorCode,
+    TiaV19BlockCatalogErrorCode ErrorCode,
     string? Error)
 {
     public bool IsSuccess => ProjectId is not null && SnapshotHash is not null && TotalBlockCount is not null && Error is null;
