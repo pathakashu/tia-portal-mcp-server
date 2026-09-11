@@ -54,7 +54,7 @@ from .options import (
     load_options,
     validate_transport_options,
 )
-from .tls import ClientCertificatePrincipalMapper
+from .tls import ClientCertificatePrincipalMapper, ClientCertificateValidator
 
 WWWROOT = Path(__file__).parent / "wwwroot"
 
@@ -158,6 +158,7 @@ def create_app(
 
     development_principal: AuthenticatedPrincipal | None = None
     principal_mapper: ClientCertificatePrincipalMapper | None = None
+    client_certificate_validator: ClientCertificateValidator | None = None
     if transport_options.allow_insecure_localhost:
         development_principal = AuthenticatedPrincipal(
             identity=AuthenticatedIdentity("localhost-development", "localhost-development"),
@@ -168,6 +169,9 @@ def create_app(
         principal_mapper = ClientCertificatePrincipalMapper(
             transport_options.client_principal_mappings
         )
+        client_certificate_validator = ClientCertificateValidator(
+            transport_options.trusted_client_issuers
+        )
 
     async def health(request: Request) -> Response:
         return JSONResponse({"status": "ready"})
@@ -177,10 +181,12 @@ def create_app(
             principal = development_principal
         else:
             tls = (request.scope.get("extensions") or {}).get("tls") or {}
-            certificate_der = tls.get("client_cert_der")
-            certificate_dict = tls.get("client_cert_dict") or {}
-            subject = _format_subject(certificate_dict.get("subject"))
-            principal = principal_mapper.try_map(certificate_der, subject)
+            principal = _authenticate_client_certificate(
+                certificate_der=tls.get("client_cert_der"),
+                certificate_dict=tls.get("client_cert_dict") or {},
+                validator=client_certificate_validator,
+                mapper=principal_mapper,
+            )
             if principal is None:
                 return PlainTextResponse("", status_code=403)
 
@@ -251,6 +257,25 @@ async def _handle_mcp_request(
         media_type="application/json",
         headers=headers,
     )
+
+
+def _authenticate_client_certificate(
+    certificate_der: bytes | None,
+    certificate_dict: dict[str, Any],
+    validator: ClientCertificateValidator,
+    mapper: ClientCertificatePrincipalMapper,
+) -> AuthenticatedPrincipal | None:
+    """Trusted-issuer/expiry check, then thumbprint-to-principal mapping.
+
+    Mirrors Kestrel's ``ClientCertificateValidation`` callback: a certificate that chain-
+    validated at the TLS layer (``verify_mode=CERT_REQUIRED``) is still narrowed down here to
+    an explicitly allow-listed issuer and a mapped thumbprint before it can authenticate.
+    """
+    if not validator.validate(certificate_dict):
+        return None
+
+    subject = _format_subject(certificate_dict.get("subject"))
+    return mapper.try_map(certificate_der, subject)
 
 
 def _is_allowed_origin(request: Request) -> bool:

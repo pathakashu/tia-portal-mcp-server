@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta, timezone
 
 import pytest
 from starlette.testclient import TestClient
 
-from engineerpc.host.app import create_app
+from engineerpc.host.app import _authenticate_client_certificate, create_app
 from engineerpc.host.jsonrpc import PROTOCOL_VERSION
 from engineerpc.host.options import (
     ClientCertificatePrincipalMapping,
@@ -17,7 +18,11 @@ from engineerpc.host.options import (
     is_valid_thumbprint,
     validate_transport_options,
 )
-from engineerpc.host.tls import ClientCertificatePrincipalMapper, certificate_thumbprint
+from engineerpc.host.tls import (
+    ClientCertificatePrincipalMapper,
+    ClientCertificateValidator,
+    certificate_thumbprint,
+)
 
 
 @pytest.fixture
@@ -204,6 +209,73 @@ def test_certificate_mapper_binds_only_allow_listed_thumbprints():
     assert mapped.identity.client_id == thumbprint
     assert unmapped is None
     assert mapper.try_map(None) is None
+
+
+def _peer_cert_dict(issuer_cn: str, *, expired: bool = False) -> dict:
+    now = datetime.now(timezone.utc)
+    not_before = now - timedelta(days=1)
+    not_after = (now - timedelta(days=1)) if expired else (now + timedelta(days=365))
+    fmt = lambda dt: dt.strftime("%b %d %H:%M:%S %Y GMT")
+    return {
+        "issuer": ((("commonName", issuer_cn),),),
+        "subject": ((("commonName", "engineer-agent"),),),
+        "notBefore": fmt(not_before),
+        "notAfter": fmt(not_after),
+    }
+
+
+def test_authenticate_client_certificate_rejects_untrusted_issuer():
+    """A chain-validated cert from an issuer outside the allow-list must still be rejected."""
+    certificate = b"pretend-der-bytes"
+    validator = ClientCertificateValidator(["CN=Trusted Issuer"])
+    mapper = ClientCertificatePrincipalMapper(
+        [ClientCertificatePrincipalMapping(certificate_thumbprint(certificate), ("Engineer",), ("engineering.plan",))]
+    )
+
+    principal = _authenticate_client_certificate(
+        certificate_der=certificate,
+        certificate_dict=_peer_cert_dict("Untrusted CA"),
+        validator=validator,
+        mapper=mapper,
+    )
+
+    assert principal is None
+
+
+def test_authenticate_client_certificate_rejects_expired_certificate():
+    certificate = b"pretend-der-bytes"
+    validator = ClientCertificateValidator(["CN=Trusted Issuer"])
+    mapper = ClientCertificatePrincipalMapper(
+        [ClientCertificatePrincipalMapping(certificate_thumbprint(certificate), ("Engineer",), ("engineering.plan",))]
+    )
+
+    principal = _authenticate_client_certificate(
+        certificate_der=certificate,
+        certificate_dict=_peer_cert_dict("Trusted Issuer", expired=True),
+        validator=validator,
+        mapper=mapper,
+    )
+
+    assert principal is None
+
+
+def test_authenticate_client_certificate_maps_trusted_issuer_to_principal():
+    certificate = b"pretend-der-bytes"
+    validator = ClientCertificateValidator(["CN=Trusted Issuer"])
+    mapper = ClientCertificatePrincipalMapper(
+        [ClientCertificatePrincipalMapping(certificate_thumbprint(certificate), ("Engineer",), ("engineering.plan",))]
+    )
+
+    principal = _authenticate_client_certificate(
+        certificate_der=certificate,
+        certificate_dict=_peer_cert_dict("Trusted Issuer"),
+        validator=validator,
+        mapper=mapper,
+    )
+
+    assert principal is not None
+    assert principal.roles == frozenset({"Engineer"})
+    assert principal.scopes == frozenset({"engineering.plan"})
 
 
 def test_worker_options_gate_tool_exposure(tmp_path):
