@@ -136,7 +136,8 @@ var requestProcessor = new McpJsonRpcRequestProcessor(
 		timeProvider),
 	tiaV19WorkerOptions.Enabled,
 	tiaV19WorkerOptions.Enabled && tiaV19WorkerOptions.EnableBlockCatalogRead,
-	blockWriteEnabled);
+	blockWriteEnabled,
+	transportOptions.SessionDurationSeconds);
 
 if (transportOptions.AllowInsecureLocalhost)
 {

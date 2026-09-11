@@ -35,13 +35,28 @@ public sealed class TiaV19ProjectContextProtocolTests
     public void ProjectSnapshot_IsDeterministicAndChangesWithProjectMetadata()
     {
         var timestamp = new DateTime(2026, 9, 7, 12, 0, 0, DateTimeKind.Utc);
+        var laterTimestamp = timestamp.AddTicks(1);
 
-        var first = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 128, "19.0");
-        var second = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 128, "19.0");
-        var changed = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 129, "19.0");
+        var first = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, "19.0");
+        var second = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, "19.0");
+        var changed = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", laterTimestamp, "19.0");
 
         Assert.Equal(first, second);
         Assert.NotEqual(first, changed);
+    }
+
+    [Fact]
+    public void ProjectSnapshot_IsStableAcrossRepeatedProjectOpens()
+    {
+        // TIA appends a log entry on every Openness open, so Project.Size grows even when no
+        // engineering content changed. The snapshot must ignore it, otherwise catalog
+        // continuation and every approved write fail their stale-context checks.
+        var timestamp = new DateTime(2026, 9, 7, 12, 0, 0, DateTimeKind.Utc);
+
+        var firstOpen = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, "19.0");
+        var secondOpen = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, "19.0");
+
+        Assert.Equal(firstOpen, secondOpen);
     }
 
     [Fact]
@@ -51,7 +66,7 @@ public sealed class TiaV19ProjectContextProtocolTests
         // some real V19 projects; the snapshot hash must still be computable.
         var timestamp = new DateTime(2026, 9, 7, 12, 0, 0, DateTimeKind.Utc);
 
-        var snapshot = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, 128, string.Empty);
+        var snapshot = TiaV19ProjectSnapshot.Calculate("project-1", "Main", "C:\\Projects\\Main.ap19", timestamp, string.Empty);
 
         Assert.False(string.IsNullOrEmpty(snapshot));
     }

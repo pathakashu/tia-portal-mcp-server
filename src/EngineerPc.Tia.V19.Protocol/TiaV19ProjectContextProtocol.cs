@@ -97,12 +97,18 @@ public sealed record TiaV19ProjectContextResponse(
 
 public static class TiaV19ProjectSnapshot
 {
+    /// <remarks>
+    /// <c>Project.Size</c> is deliberately excluded. TIA Portal appends a log entry every time
+    /// Openness opens a project, so the reported size grows on each open even when no
+    /// engineering content changed. Including it made the snapshot hash differ on every read,
+    /// which permanently broke catalog continuation and made every approved write fail its
+    /// stale-context check. <c>LastModified</c> is the stable "has this project changed" signal.
+    /// </remarks>
     public static string Calculate(
         string projectId,
         string projectName,
         string projectFilePath,
         DateTime lastModifiedUtc,
-        long size,
         string version)
     {
         ThrowIfNullOrWhiteSpace(projectId, nameof(projectId));
@@ -119,7 +125,6 @@ public static class TiaV19ProjectSnapshot
             Encode(projectName),
             Encode(projectFilePath),
             Encode(lastModifiedUtc.ToUniversalTime().Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture)),
-            Encode(size.ToString(System.Globalization.CultureInfo.InvariantCulture)),
             Encode(version)
         });
         using var algorithm = SHA256.Create();

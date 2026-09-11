@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "engineerpc"
+version = "1.0.0"
+description = "Engineer-PC MCP Server for Siemens TIA Portal V19 (Python port)"
+requires-python = ">=3.11"
+dependencies = [
+    "starlette>=0.37",
+    "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+engineerpc-host = "engineerpc.host.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["engineerpc*"]
+
+[tool.setuptools.package-data]
+"engineerpc.host" = ["wwwroot/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

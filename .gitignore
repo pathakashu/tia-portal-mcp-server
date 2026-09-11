@@ -23,6 +23,15 @@ obj/
 **/packages/*
 !**/packages/build/
 
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
 # OS files
 .DS_Store
 Thumbs.db

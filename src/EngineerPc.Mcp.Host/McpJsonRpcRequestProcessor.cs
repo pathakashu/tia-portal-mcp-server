@@ -20,19 +20,27 @@ public sealed class McpJsonRpcRequestProcessor
     private readonly bool projectContextReadEnabled;
     private readonly bool blockCatalogReadEnabled;
     private readonly bool blockWriteEnabled;
+    private readonly TimeSpan sessionDuration;
+
+    public const int DefaultSessionDurationSeconds = 300;
 
     public McpJsonRpcRequestProcessor(
         McpSessionManager sessionManager,
         McpToolRouter toolRouter,
         bool projectContextReadEnabled = false,
         bool blockCatalogReadEnabled = false,
-        bool blockWriteEnabled = false)
+        bool blockWriteEnabled = false,
+        int sessionDurationSeconds = DefaultSessionDurationSeconds)
     {
         this.sessionManager = sessionManager ?? throw new ArgumentNullException(nameof(sessionManager));
         this.toolRouter = toolRouter ?? throw new ArgumentNullException(nameof(toolRouter));
         this.projectContextReadEnabled = projectContextReadEnabled;
         this.blockCatalogReadEnabled = blockCatalogReadEnabled;
         this.blockWriteEnabled = blockWriteEnabled;
+
+        // Sessions expire this long after initialize (absolute, not sliding). TIA-backed
+        // calls can take a minute each, so a short duration can strand a write mid-flow.
+        this.sessionDuration = TimeSpan.FromSeconds(sessionDurationSeconds);
     }
 
     public McpJsonRpcProcessingResult Process(
@@ -141,7 +149,7 @@ public sealed class McpJsonRpcRequestProcessor
             return Error(request.Id, -32602, "Unsupported protocol version.");
         }
 
-        var session = sessionManager.Connect(TimeSpan.FromMinutes(5));
+        var session = sessionManager.Connect(sessionDuration);
         sessionManager.Authenticate(session.SessionId, principal);
         return new McpJsonRpcProcessingResult(
             new McpJsonRpcResponse(

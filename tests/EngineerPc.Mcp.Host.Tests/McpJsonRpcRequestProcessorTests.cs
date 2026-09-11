@@ -286,6 +286,38 @@ public sealed class McpJsonRpcRequestProcessorTests
     }
 
     [Fact]
+    public void Process_SessionDuration_IsConfigurable()
+    {
+        // TIA-backed calls take about a minute each, so a session expiring mid-workflow
+        // strands an approved write. This setting was previously validated but ignored.
+        var clock = new MutableTimeProvider(new DateTimeOffset(2026, 9, 7, 12, 0, 0, TimeSpan.Zero));
+        var processor = CreateProcessor(out _, sessionDurationSeconds: 1_800, timeProvider: clock);
+        var initialized = processor.Process(InitializeRequest(), Principal(), null, null);
+        processor.Process(
+            Notification("notifications/initialized"),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+
+        clock.UtcNow = clock.UtcNow.AddMinutes(20);
+        var stillAlive = processor.Process(
+            Request("tools/list", new { }),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+
+        clock.UtcNow = clock.UtcNow.AddMinutes(20);
+        var expired = processor.Process(
+            Request("tools/list", new { }),
+            Principal(),
+            initialized.SessionId,
+            McpJsonRpcRequestProcessor.ProtocolVersion);
+
+        Assert.Null(stillAlive.Response?.Error);
+        Assert.Equal("MCP session is not ready for tool calls.", expired.Response?.Error?.Message);
+    }
+
+    [Fact]
     public void Process_InitializeWithoutClientInfo_RejectsRequest()
     {
         var processor = CreateProcessor(out _);
@@ -304,9 +336,11 @@ public sealed class McpJsonRpcRequestProcessorTests
         out McpSessionManager sessionManager,
         bool projectContextReadEnabled = false,
         bool blockCatalogReadEnabled = false,
-        bool blockWriteEnabled = false)
+        bool blockWriteEnabled = false,
+        int sessionDurationSeconds = McpJsonRpcRequestProcessor.DefaultSessionDurationSeconds,
+        TimeProvider? timeProvider = null)
     {
-        var timeProvider = TimeProvider.System;
+        timeProvider ??= TimeProvider.System;
         sessionManager = new McpSessionManager(timeProvider);
         var planner = new EngineeringOperationPlanner(new CreateBlockOperationValidator());
         var policy = new DefaultEngineeringPolicy();
@@ -338,7 +372,15 @@ public sealed class McpJsonRpcRequestProcessorTests
                 timeProvider),
             projectContextReadEnabled,
             blockCatalogReadEnabled,
-            blockWriteEnabled);
+            blockWriteEnabled,
+            sessionDurationSeconds);
+    }
+
+    private sealed class MutableTimeProvider(DateTimeOffset utcNow) : TimeProvider
+    {
+        public DateTimeOffset UtcNow { get; set; } = utcNow;
+
+        public override DateTimeOffset GetUtcNow() => UtcNow;
     }
 
     private static AuthenticatedPrincipal Principal() => new(

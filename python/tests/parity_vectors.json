@@ -1,0 +1,226 @@
+{
+  "generatedBy": "tools/ParityVectors",
+  "stringEscaping": [
+    {
+      "raw": "plain",
+      "serialized": "\u0022plain\u0022"
+    },
+    {
+      "raw": "quote\u0022inside",
+      "serialized": "\u0022quote\\u0022inside\u0022"
+    },
+    {
+      "raw": "back\\slash",
+      "serialized": "\u0022back\\\\slash\u0022"
+    },
+    {
+      "raw": "slash/inside",
+      "serialized": "\u0022slash/inside\u0022"
+    },
+    {
+      "raw": "amp\u0026persand",
+      "serialized": "\u0022amp\\u0026persand\u0022"
+    },
+    {
+      "raw": "apo\u0027strophe",
+      "serialized": "\u0022apo\\u0027strophe\u0022"
+    },
+    {
+      "raw": "plus\u002Bsign",
+      "serialized": "\u0022plus\\u002Bsign\u0022"
+    },
+    {
+      "raw": "angle\u003Cbrackets\u003E",
+      "serialized": "\u0022angle\\u003Cbrackets\\u003E\u0022"
+    },
+    {
+      "raw": "back\u0060tick",
+      "serialized": "\u0022back\\u0060tick\u0022"
+    },
+    {
+      "raw": "tab\there",
+      "serialized": "\u0022tab\\there\u0022"
+    },
+    {
+      "raw": "newline\nhere",
+      "serialized": "\u0022newline\\nhere\u0022"
+    },
+    {
+      "raw": "carriage\rreturn",
+      "serialized": "\u0022carriage\\rreturn\u0022"
+    },
+    {
+      "raw": "back\bspace",
+      "serialized": "\u0022back\\bspace\u0022"
+    },
+    {
+      "raw": "form\ffeed",
+      "serialized": "\u0022form\\ffeed\u0022"
+    },
+    {
+      "raw": "control\u0001char",
+      "serialized": "\u0022control\\u0001char\u0022"
+    },
+    {
+      "raw": "accented-\u00E9",
+      "serialized": "\u0022accented-\\u00E9\u0022"
+    },
+    {
+      "raw": "japanese-\u65E5\u672C\u8A9E",
+      "serialized": "\u0022japanese-\\u65E5\\u672C\\u8A9E\u0022"
+    },
+    {
+      "raw": "emoji-\uD83D\uDE00",
+      "serialized": "\u0022emoji-\\uD83D\\uDE00\u0022"
+    },
+    {
+      "raw": "equals=and:colon;semi,comma",
+      "serialized": "\u0022equals=and:colon;semi,comma\u0022"
+    },
+    {
+      "raw": "brackets[]{}()|~^@!#$%*-._?",
+      "serialized": "\u0022brackets[]{}()|~^@!#$%*-._?\u0022"
+    }
+  ],
+  "protocolVersion": "1.3",
+  "operations": [
+    {
+      "key": "minimal",
+      "apiJson": "{\u0022name\u0022:\u0022FB_Motor\u0022,\u0022blockType\u0022:\u0022FunctionBlock\u0022,\u0022language\u0022:\u0022Scl\u0022,\u0022interface\u0022:{\u0022inputs\u0022:[],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:\u0022CreateBlock\u0022,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u0022a5b9a005-26bc-4151-a45c-902a9338dc5a\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022project-1\u0022,\u0022snapshotHash\u0022:\u0022snapshot-1\u0022},\u0022idempotencyKey\u0022:\u0022idempotency-1\u0022}",
+      "hashJson": "{\u0022name\u0022:\u0022FB_Motor\u0022,\u0022blockType\u0022:1,\u0022language\u0022:0,\u0022interface\u0022:{\u0022inputs\u0022:[],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:0,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u0022a5b9a005-26bc-4151-a45c-902a9338dc5a\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022project-1\u0022,\u0022snapshotHash\u0022:\u0022snapshot-1\u0022},\u0022idempotencyKey\u0022:\u0022idempotency-1\u0022}",
+      "operationHash": "62C7302382B5909C67961BDEF7503E2489FF1E0157E86D0D1A68053928ED2F25",
+      "planErrors": [],
+      "preview": "Create FunctionBlock \u0027FB_Motor\u0027 using Scl.",
+      "sclValidationErrors": [],
+      "sclSource": "FUNCTION_BLOCK \u0022FB_Motor\u0022\r\nVAR_INPUT\r\nEND_VAR\r\nBEGIN\r\nEND_FUNCTION_BLOCK"
+    },
+    {
+      "key": "with_inputs",
+      "apiJson": "{\u0022name\u0022:\u0022FB_Motor\u0022,\u0022blockType\u0022:\u0022FunctionBlock\u0022,\u0022language\u0022:\u0022Scl\u0022,\u0022interface\u0022:{\u0022inputs\u0022:[{\u0022name\u0022:\u0022Start\u0022,\u0022dataType\u0022:\u0022Bool\u0022}],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:\u0022CreateBlock\u0022,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u002211111111-2222-3333-4444-555555555555\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022project-1\u0022,\u0022snapshotHash\u0022:\u0022snapshot-1\u0022},\u0022idempotencyKey\u0022:\u0022idempotency-2\u0022}",
+      "hashJson": "{\u0022name\u0022:\u0022FB_Motor\u0022,\u0022blockType\u0022:1,\u0022language\u0022:0,\u0022interface\u0022:{\u0022inputs\u0022:[{\u0022name\u0022:\u0022Start\u0022,\u0022dataType\u0022:\u0022Bool\u0022}],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:0,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u002211111111-2222-3333-4444-555555555555\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022project-1\u0022,\u0022snapshotHash\u0022:\u0022snapshot-1\u0022},\u0022idempotencyKey\u0022:\u0022idempotency-2\u0022}",
+      "operationHash": "81A75BC95FFF70B6212CF7109F422E52875FC614A719D29D8D50D18472AC360A",
+      "planErrors": [],
+      "preview": "Create FunctionBlock \u0027FB_Motor\u0027 using Scl.",
+      "sclValidationErrors": [],
+      "sclSource": "FUNCTION_BLOCK \u0022FB_Motor\u0022\r\nVAR_INPUT\r\n    Start : Bool;\r\nEND_VAR\r\nBEGIN\r\nEND_FUNCTION_BLOCK"
+    },
+    {
+      "key": "full",
+      "apiJson": "{\u0022name\u0022:\u0022FB_Motor\u0022,\u0022blockType\u0022:\u0022FunctionBlock\u0022,\u0022language\u0022:\u0022Scl\u0022,\u0022interface\u0022:{\u0022inputs\u0022:[{\u0022name\u0022:\u0022Start\u0022,\u0022dataType\u0022:\u0022Bool\u0022},{\u0022name\u0022:\u0022Speed\u0022,\u0022dataType\u0022:\u0022Int\u0022}],\u0022outputs\u0022:[{\u0022name\u0022:\u0022Running\u0022,\u0022dataType\u0022:\u0022Bool\u0022}]},\u0022statements\u0022:[{\u0022target\u0022:\u0022Running\u0022,\u0022source\u0022:\u0022Start\u0022}],\u0022controllerName\u0022:\u0022CIA_0001\u0022,\u0022operationType\u0022:\u0022CreateBlock\u0022,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u0022deadbeef-0000-1111-2222-333344445555\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022test-project\u0022,\u0022snapshotHash\u0022:\u002238C0156A746AAD5998E6A201E6B7A13D17D403E4D2698AC450EF7AB0980D3BE2\u0022},\u0022idempotencyKey\u0022:\u0022idempotency-3\u0022}",
+      "hashJson": "{\u0022name\u0022:\u0022FB_Motor\u0022,\u0022blockType\u0022:1,\u0022language\u0022:0,\u0022interface\u0022:{\u0022inputs\u0022:[{\u0022name\u0022:\u0022Start\u0022,\u0022dataType\u0022:\u0022Bool\u0022},{\u0022name\u0022:\u0022Speed\u0022,\u0022dataType\u0022:\u0022Int\u0022}],\u0022outputs\u0022:[{\u0022name\u0022:\u0022Running\u0022,\u0022dataType\u0022:\u0022Bool\u0022}]},\u0022statements\u0022:[{\u0022target\u0022:\u0022Running\u0022,\u0022source\u0022:\u0022Start\u0022}],\u0022controllerName\u0022:\u0022CIA_0001\u0022,\u0022operationType\u0022:0,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u0022deadbeef-0000-1111-2222-333344445555\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022test-project\u0022,\u0022snapshotHash\u0022:\u002238C0156A746AAD5998E6A201E6B7A13D17D403E4D2698AC450EF7AB0980D3BE2\u0022},\u0022idempotencyKey\u0022:\u0022idempotency-3\u0022}",
+      "operationHash": "4AB5D8695D3BA052E7C323A3DBFFC147B245C6CC1598CB17479588B71DA8E7B6",
+      "planErrors": [],
+      "preview": "Create FunctionBlock \u0027FB_Motor\u0027 using Scl.",
+      "sclValidationErrors": [],
+      "sclSource": "FUNCTION_BLOCK \u0022FB_Motor\u0022\r\nVAR_INPUT\r\n    Start : Bool;\r\n    Speed : Int;\r\nEND_VAR\r\nVAR_OUTPUT\r\n    Running : Bool;\r\nEND_VAR\r\nBEGIN\r\n    Running := Start;\r\nEND_FUNCTION_BLOCK"
+    },
+    {
+      "key": "function_no_outputs",
+      "apiJson": "{\u0022name\u0022:\u0022FC_Safety\u0022,\u0022blockType\u0022:\u0022Function\u0022,\u0022language\u0022:\u0022Scl\u0022,\u0022interface\u0022:{\u0022inputs\u0022:[{\u0022name\u0022:\u0022In1\u0022,\u0022dataType\u0022:\u0022Bool\u0022}],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:\u0022CreateBlock\u0022,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u002200000000-0000-0000-0000-000000000001\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022p\u0022,\u0022snapshotHash\u0022:\u0022s\u0022},\u0022idempotencyKey\u0022:\u0022k\u0022}",
+      "hashJson": "{\u0022name\u0022:\u0022FC_Safety\u0022,\u0022blockType\u0022:0,\u0022language\u0022:0,\u0022interface\u0022:{\u0022inputs\u0022:[{\u0022name\u0022:\u0022In1\u0022,\u0022dataType\u0022:\u0022Bool\u0022}],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:0,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u002200000000-0000-0000-0000-000000000001\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022p\u0022,\u0022snapshotHash\u0022:\u0022s\u0022},\u0022idempotencyKey\u0022:\u0022k\u0022}",
+      "operationHash": "08ABDFAA9957A268C43543E0E2A1EAC990439F568B1072CB04AC0E7342C1566B",
+      "planErrors": [],
+      "preview": "Create Function \u0027FC_Safety\u0027 using Scl.",
+      "sclValidationErrors": [],
+      "sclSource": "FUNCTION \u0022FC_Safety\u0022 : Void\r\nVAR_INPUT\r\n    In1 : Bool;\r\nEND_VAR\r\nBEGIN\r\nEND_FUNCTION"
+    },
+    {
+      "key": "organization_lad",
+      "apiJson": "{\u0022name\u0022:\u0022OB_Main\u0022,\u0022blockType\u0022:\u0022OrganizationBlock\u0022,\u0022language\u0022:\u0022Lad\u0022,\u0022interface\u0022:{\u0022inputs\u0022:[],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:\u0022CreateBlock\u0022,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u002200000000-0000-0000-0000-000000000002\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022p\u0022,\u0022snapshotHash\u0022:\u0022s\u0022},\u0022idempotencyKey\u0022:\u0022k\u0022}",
+      "hashJson": "{\u0022name\u0022:\u0022OB_Main\u0022,\u0022blockType\u0022:2,\u0022language\u0022:1,\u0022interface\u0022:{\u0022inputs\u0022:[],\u0022outputs\u0022:null},\u0022statements\u0022:null,\u0022controllerName\u0022:null,\u0022operationType\u0022:0,\u0022irVersion\u0022:\u00221.0\u0022,\u0022operationId\u0022:\u002200000000-0000-0000-0000-000000000002\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022p\u0022,\u0022snapshotHash\u0022:\u0022s\u0022},\u0022idempotencyKey\u0022:\u0022k\u0022}",
+      "operationHash": "9FDA0B93FC8621470FBAB3285E19A760CAFCBBDBBFAC83094B510F89E160EC30",
+      "planErrors": [],
+      "preview": "Create OrganizationBlock \u0027OB_Main\u0027 using Lad.",
+      "sclValidationErrors": [
+        "SCL source generation requires the Scl programming language.",
+        "SCL source generation supports only Function and FunctionBlock block types."
+      ],
+      "sclSource": null
+    }
+  ],
+  "projectSnapshots": [
+    {
+      "projectId": "project-1",
+      "projectName": "Main",
+      "projectFilePath": "C:\\Projects\\Main.ap19",
+      "lastModifiedUtcTicks": 639243792000000000,
+      "version": "19.0",
+      "snapshotHash": "19DEACAEE254FB1229922D48F365EC8A5213CCBA5DDF474E6D40AED852E89B13"
+    },
+    {
+      "projectId": "project-1",
+      "projectName": "Main",
+      "projectFilePath": "C:\\Projects\\Main.ap19",
+      "lastModifiedUtcTicks": 639243792010000000,
+      "version": "19.0",
+      "snapshotHash": "DDDDE72F184FBABD4F968C2E39659151BAB752169DF2A7561C0A346D40667293"
+    },
+    {
+      "projectId": "test-project",
+      "projectName": "CIA_0001_V19",
+      "projectFilePath": "C:\\Gautam\\CIA_0001_V19\\CIA_0001_V19.ap19",
+      "lastModifiedUtcTicks": 638996004640000000,
+      "version": "",
+      "snapshotHash": "A8561F35ABB06010F1531AEBD88251F7C237398C7961FA969992047C6089700F"
+    },
+    {
+      "projectId": "p",
+      "projectName": "n",
+      "projectFilePath": "C:\\x.ap19",
+      "lastModifiedUtcTicks": 621355968000000000,
+      "version": "",
+      "snapshotHash": "17B177BD5D01D4A90D0F51D736BC282CD815E7FAB19F62DC3F263B93F2F70586"
+    }
+  ],
+  "deterministicRequestIds": [
+    {
+      "sessionId": "526ec86b11c94dbdb66b07f3c2275051",
+      "rawJsonRpcId": "\u00221\u0022",
+      "requestId": "b9265cb0-c94c-6644-f776-96fe74fb7ab0"
+    },
+    {
+      "sessionId": "526ec86b11c94dbdb66b07f3c2275051",
+      "rawJsonRpcId": "\u00222\u0022",
+      "requestId": "fadd1038-ccf1-63cd-32e7-ffa6d1fb8954"
+    },
+    {
+      "sessionId": "00000000000000000000000000000000",
+      "rawJsonRpcId": "42",
+      "requestId": "f8a4d965-9afe-50bc-f929-521ab3346fc2"
+    },
+    {
+      "sessionId": "0e1ab139394c4d169783bb14573d7d16",
+      "rawJsonRpcId": "\u0022request-id\u0022",
+      "requestId": "12856e5b-d051-91da-86be-3b50a2d09e98"
+    }
+  ],
+  "mockAdapterSnapshots": [
+    {
+      "addedBlock": "FB_Motor",
+      "snapshotHash": "EE2FF141EDA5141F6D2C987A42F5EAA5EDA09402761C311266C173BD3B2DCCB4"
+    },
+    {
+      "addedBlock": "FC_Safety",
+      "snapshotHash": "F24865C1F7706568D5DE06727C33E797933A601670EDBA0B6C4A6F299619B2F6"
+    },
+    {
+      "addedBlock": "AB_First",
+      "snapshotHash": "8A5BB40F88A68E810ED74906B924D5B3677ECD41A44697B8B75127E553A508E9"
+    }
+  ],
+  "workerRequests": [
+    {
+      "key": "get_project_context",
+      "json": "{\u0022protocolVersion\u0022:\u00221.3\u0022,\u0022requestId\u0022:\u0022req-1\u0022,\u0022method\u0022:\u0022get_project_context\u0022,\u0022projectId\u0022:\u0022test-project\u0022,\u0022blockCatalogStartIndex\u0022:null,\u0022blockCatalogMaximumBlockCount\u0022:null,\u0022blockCatalogExpectedSnapshotHash\u0022:null,\u0022createBlockControllerName\u0022:null,\u0022createBlockName\u0022:null,\u0022createBlockType\u0022:null,\u0022createBlockSourceText\u0022:null,\u0022createBlockExpectedSnapshotHash\u0022:null}"
+    },
+    {
+      "key": "get_block_catalog",
+      "json": "{\u0022protocolVersion\u0022:\u00221.3\u0022,\u0022requestId\u0022:\u0022req-2\u0022,\u0022method\u0022:\u0022get_block_catalog\u0022,\u0022projectId\u0022:\u0022test-project\u0022,\u0022blockCatalogStartIndex\u0022:0,\u0022blockCatalogMaximumBlockCount\u0022:50,\u0022blockCatalogExpectedSnapshotHash\u0022:null,\u0022createBlockControllerName\u0022:null,\u0022createBlockName\u0022:null,\u0022createBlockType\u0022:null,\u0022createBlockSourceText\u0022:null,\u0022createBlockExpectedSnapshotHash\u0022:null}"
+    },
+    {
+      "key": "create_block",
+      "json": "{\u0022protocolVersion\u0022:\u00221.3\u0022,\u0022requestId\u0022:\u0022req-3\u0022,\u0022method\u0022:\u0022create_block\u0022,\u0022projectId\u0022:\u0022test-project\u0022,\u0022blockCatalogStartIndex\u0022:null,\u0022blockCatalogMaximumBlockCount\u0022:null,\u0022blockCatalogExpectedSnapshotHash\u0022:null,\u0022createBlockControllerName\u0022:\u0022CIA_0001\u0022,\u0022createBlockName\u0022:\u0022FB_Motor\u0022,\u0022createBlockType\u0022:\u0022FunctionBlock\u0022,\u0022createBlockSourceText\u0022:\u0022FUNCTION_BLOCK \\u0022FB_Motor\\u0022\\r\\nEND_FUNCTION_BLOCK\u0022,\u0022createBlockExpectedSnapshotHash\u0022:\u0022snapshot-1\u0022}"
+    }
+  ],
+  "transactionApiJson": "{\u0022transactionId\u0022:\u0022aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\u0022,\u0022operationId\u0022:\u0022a5b9a005-26bc-4151-a45c-902a9338dc5a\u0022,\u0022operationHash\u0022:\u0022OPERATIONHASH\u0022,\u0022projectContext\u0022:{\u0022projectId\u0022:\u0022project-1\u0022,\u0022snapshotHash\u0022:\u0022snapshot-1\u0022},\u0022idempotencyKey\u0022:\u0022idempotency-1\u0022,\u0022state\u0022:\u0022AwaitingApproval\u0022,\u0022createdAtUtc\u0022:\u00222026-09-07T12:00:00\u002B00:00\u0022}"
+}

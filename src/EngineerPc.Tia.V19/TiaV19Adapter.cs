@@ -50,7 +50,6 @@ public sealed class TiaV19Adapter : IDisposable
                 project.Name,
                 project.Path.FullName,
                 project.LastModified.ToUniversalTime(),
-                project.Size,
                 project.Version);
             return new TiaV19ProjectContextResponse(requestId, projectDefinition.ProjectId, snapshotHash, null);
         }
@@ -115,7 +114,6 @@ public sealed class TiaV19Adapter : IDisposable
                 project.Name,
                 project.Path.FullName,
                 project.LastModified.ToUniversalTime(),
-                project.Size,
                 project.Version);
             if (startIndex > 0 && !string.Equals(expectedSnapshotHash, snapshotHash, StringComparison.Ordinal))
             {
@@ -226,7 +224,6 @@ public sealed class TiaV19Adapter : IDisposable
                 project.Name,
                 project.Path.FullName,
                 project.LastModified.ToUniversalTime(),
-                project.Size,
                 project.Version);
             if (!string.Equals(expectedSnapshotHash, snapshotHash, StringComparison.Ordinal))
             {
@@ -277,7 +274,6 @@ public sealed class TiaV19Adapter : IDisposable
                 project.Name,
                 project.Path.FullName,
                 project.LastModified.ToUniversalTime(),
-                project.Size,
                 project.Version);
             return new TiaV19CreateBlockResponse(
                 requestId,

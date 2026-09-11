@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Engineer-PC MCP Console</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #0f1115;
+    --panel: #161922;
+    --panel-2: #1c202b;
+    --border: #2a2f3c;
+    --text: #e6e8ee;
+    --muted: #8b93a7;
+    --accent: #4f8cff;
+    --ok: #3ecf8e;
+    --err: #ff6b6b;
+    --mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  header {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  header h1 { font-size: 15px; margin: 0; font-weight: 600; white-space: nowrap; }
+  header .sub { color: var(--muted); font-size: 12px; }
+  input[type=text] {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 6px 9px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  #baseUrl { width: 300px; }
+  button {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  button.secondary {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  button:disabled { opacity: .5; cursor: default; }
+  button:hover:not(:disabled) { filter: brightness(1.1); }
+  #status { font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); }
+  #status.connected { color: var(--ok); border-color: var(--ok); }
+  #status.disconnected { color: var(--muted); }
+  #status.error { color: var(--err); border-color: var(--err); }
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 260px 1fr 1fr;
+    overflow: hidden;
+  }
+  section { overflow-y: auto; border-right: 1px solid var(--border); padding: 12px; }
+  section:last-child { border-right: none; }
+  h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 10px; }
+  .tool {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .tool:hover { border-color: var(--accent); }
+  .tool.selected { border-color: var(--accent); background: var(--panel-2); }
+  .tool .name { font-family: var(--mono); font-size: 12.5px; color: var(--accent); }
+  .tool .desc { font-size: 11.5px; color: var(--muted); margin-top: 3px; }
+  textarea {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 6px;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px;
+    resize: vertical;
+  }
+  #argsArea { height: 260px; }
+  .row { display: flex; gap: 8px; align-items: center; margin: 8px 0; flex-wrap: wrap; }
+  .hint { font-size: 11px; color: var(--muted); }
+  #responseView {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 120px;
+  }
+  #memory {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 10px;
+    font-family: var(--mono);
+  }
+  #memory div { margin: 2px 0; }
+  #memory b { color: var(--text); }
+  .log-entry {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+  .log-head {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 9px;
+    cursor: pointer;
+    background: var(--panel);
+    font-size: 11.5px;
+    font-family: var(--mono);
+  }
+  .log-head .ok { color: var(--ok); }
+  .log-head .err { color: var(--err); }
+  .log-body {
+    display: none;
+    padding: 8px 9px;
+    background: var(--panel-2);
+    font-family: var(--mono);
+    font-size: 11px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    border-top: 1px solid var(--border);
+  }
+  .log-entry.open .log-body { display: block; }
+  #log { display: flex; flex-direction: column-reverse; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Engineer-PC MCP Console</h1>
+  <span class="sub">dev/test tool &mdash; use with McpTransport__AllowInsecureLocalhost=true</span>
+  <input id="baseUrl" type="text" />
+  <button id="connectBtn">Connect</button>
+  <span id="status" class="disconnected">not connected</span>
+</header>
+
+<main>
+  <section id="toolsPanel">
+    <h2>Tools</h2>
+    <div id="toolsList" class="hint">Connect to list tools.</div>
+  </section>
+
+  <section id="callPanel">
+    <h2>Call tool</h2>
+    <div id="memory">
+      <div><b>Last operation:</b> <span id="memOperation">none</span></div>
+      <div><b>Last transaction:</b> <span id="memTransaction">none</span></div>
+      <div><b>Last snapshot hash:</b> <span id="memSnapshot">none</span></div>
+    </div>
+    <textarea id="argsArea" placeholder="Select a tool to generate an argument skeleton."></textarea>
+    <div class="row">
+      <button id="callBtn" disabled>Call</button>
+      <button id="fillTxBtn" class="secondary">Insert last transaction</button>
+      <button id="fillOpBtn" class="secondary">Insert last operation</button>
+      <button id="regenBtn" class="secondary">Regenerate skeleton</button>
+    </div>
+    <div class="hint">plan_create_block / preview_scl_block need a fresh operationId + idempotencyKey each call; the skeleton auto-fills those.</div>
+  </section>
+
+  <section id="responsePanel">
+    <h2>Last response</h2>
+    <div id="responseView">No calls yet.</div>
+    <h2 style="margin-top:16px">Request log</h2>
+    <div id="log"></div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const baseUrlInput = $("baseUrl");
+  const statusEl = $("status");
+  const toolsListEl = $("toolsList");
+  const argsArea = $("argsArea");
+  const callBtn = $("callBtn");
+  const responseView = $("responseView");
+  const logEl = $("log");
+  const memOperation = $("memOperation");
+  const memTransaction = $("memTransaction");
+  const memSnapshot = $("memSnapshot");
+
+  baseUrlInput.value = location.origin + "/mcp";
+
+  const PROTOCOL_VERSION = "2025-06-18";
+  let sessionId = null;
+  let requestSeq = 0;
+  let tools = [];
+  let selectedTool = null;
+
+  let lastOperation = null;     // the CreateBlockOperation object last used in plan_create_block
+  let lastTransaction = null;   // the EngineeringTransaction object from the last plan/approve response
+  let lastSnapshotHash = null;  // most recently observed projectContext.snapshotHash
+
+  function setStatus(text, cls) {
+    statusEl.textContent = text;
+    statusEl.className = cls;
+  }
+
+  function uuid() {
+    return crypto.randomUUID();
+  }
+
+  function nowPlusMinutesIso(minutes) {
+    return new Date(Date.now() + minutes * 60000).toISOString();
+  }
+
+  function updateMemoryView() {
+    memOperation.textContent = lastOperation ? `${lastOperation.name} (${lastOperation.operationId})` : "none";
+    memTransaction.textContent = lastTransaction ? `${lastTransaction.transactionId} [${lastTransaction.state}]` : "none";
+    memSnapshot.textContent = lastSnapshotHash || "none";
+  }
+
+  function rememberFromResponse(toolName, structuredContent) {
+    if (!structuredContent) return;
+    if (structuredContent.transaction) {
+      lastTransaction = structuredContent.transaction;
+      if (lastTransaction.projectContext && lastTransaction.projectContext.snapshotHash) {
+        lastSnapshotHash = lastTransaction.projectContext.snapshotHash;
+      }
+    }
+    if (structuredContent.projectContext && structuredContent.projectContext.snapshotHash) {
+      lastSnapshotHash = structuredContent.projectContext.snapshotHash;
+    }
+    if (structuredContent.blockCatalog && structuredContent.blockCatalog.projectContext) {
+      lastSnapshotHash = structuredContent.blockCatalog.projectContext.snapshotHash;
+    }
+    updateMemoryView();
+  }
+
+  async function rpcRaw(method, params, expectBody) {
+    const id = method === "notifications/initialized" ? undefined : String(++requestSeq);
+    const body = { jsonrpc: "2.0", method };
+    if (id !== undefined) body.id = id;
+    if (params !== undefined) body.params = params;
+
+    const headers = { "Content-Type": "application/json" };
+    if (sessionId) headers["Mcp-Session-Id"] = sessionId;
+    if (method !== "initialize") headers["MCP-Protocol-Version"] = PROTOCOL_VERSION;
+
+    const started = performance.now();
+    let response, text, json, ok, error;
+    try {
+      response = await fetch(baseUrlInput.value, { method: "POST", headers, body: JSON.stringify(body) });
+      text = await response.text();
+      ok = response.ok;
+      if (text) {
+        try { json = JSON.parse(text); } catch { json = null; }
+      }
+      if (json && json.error) { ok = false; error = json.error; }
+    } catch (e) {
+      ok = false;
+      error = { message: String(e) };
+    }
+
+    const durationMs = Math.round(performance.now() - started);
+    addLogEntry(method, body, response, json ?? text, ok, durationMs);
+
+    return { response, json, ok, error };
+  }
+
+  function addLogEntry(method, requestBody, httpResponse, responseBody, ok, durationMs) {
+    const entry = document.createElement("div");
+    entry.className = "log-entry";
+    const status = httpResponse ? httpResponse.status : "n/a";
+    const head = document.createElement("div");
+    head.className = "log-head";
+    head.innerHTML = `<span>${method}</span><span class="${ok ? "ok" : "err"}">${status} &middot; ${durationMs}ms</span>`;
+    head.addEventListener("click", () => entry.classList.toggle("open"));
+    const bodyEl = document.createElement("div");
+    bodyEl.className = "log-body";
+    bodyEl.textContent =
+      "--> request\n" + JSON.stringify(requestBody, null, 2) +
+      "\n\n<-- response\n" + (typeof responseBody === "string" ? responseBody : JSON.stringify(responseBody, null, 2));
+    entry.appendChild(head);
+    entry.appendChild(bodyEl);
+    logEl.appendChild(entry);
+  }
+
+  function showResponse(json, ok) {
+    responseView.textContent = JSON.stringify(json, null, 2);
+    responseView.style.borderColor = ok ? "var(--border)" : "var(--err)";
+  }
+
+  // --- connection lifecycle ---
+
+  $("connectBtn").addEventListener("click", async () => {
+    setStatus("connecting...", "disconnected");
+    sessionId = null;
+    const initResult = await rpcRaw("initialize", {
+      protocolVersion: PROTOCOL_VERSION,
+      capabilities: {},
+      clientInfo: { name: "mcp-console", version: "1.0.0" }
+    });
+    if (!initResult.ok || !initResult.response) {
+      setStatus("connect failed", "error");
+      showResponse(initResult.json ?? initResult.error, false);
+      return;
+    }
+    sessionId = initResult.response.headers.get("Mcp-Session-Id");
+    if (!sessionId) {
+      setStatus("no session id returned", "error");
+      return;
+    }
+    await rpcRaw("notifications/initialized", undefined);
+
+    const listResult = await rpcRaw("tools/list", {});
+    if (listResult.ok && listResult.json && listResult.json.result) {
+      tools = listResult.json.result.tools || [];
+      renderTools();
+      setStatus(`connected (session ${sessionId.slice(0, 8)}…, ${tools.length} tools)`, "connected");
+    } else {
+      setStatus("connected, but tools/list failed", "error");
+    }
+  });
+
+  function renderTools() {
+    toolsListEl.innerHTML = "";
+    if (tools.length === 0) {
+      toolsListEl.innerHTML = '<div class="hint">No tools advertised. Check TiaV19Worker__Enabled / EnableBlockCatalogRead / EnableBlockWrite.</div>';
+      return;
+    }
+    for (const tool of tools) {
+      const div = document.createElement("div");
+      div.className = "tool";
+      div.innerHTML = `<div class="name">${tool.name}</div><div class="desc">${tool.description || ""}</div>`;
+      div.addEventListener("click", () => selectTool(tool, div));
+      toolsListEl.appendChild(div);
+    }
+  }
+
+  function selectTool(tool, el) {
+    selectedTool = tool;
+    document.querySelectorAll(".tool").forEach((t) => t.classList.remove("selected"));
+    el.classList.add("selected");
+    callBtn.disabled = false;
+    argsArea.value = JSON.stringify(buildSkeleton(tool), null, 2);
+  }
+
+  $("regenBtn").addEventListener("click", () => {
+    if (selectedTool) argsArea.value = JSON.stringify(buildSkeleton(selectedTool), null, 2);
+  });
+
+  $("fillTxBtn").addEventListener("click", () => {
+    if (!lastTransaction) return;
+    try {
+      const current = JSON.parse(argsArea.value || "{}");
+      current.transaction = lastTransaction;
+      argsArea.value = JSON.stringify(current, null, 2);
+    } catch { /* leave textarea as-is if it isn't valid JSON right now */ }
+  });
+
+  $("fillOpBtn").addEventListener("click", () => {
+    if (!lastOperation) return;
+    try {
+      const current = JSON.parse(argsArea.value || "{}");
+      current.operation = lastOperation;
+      argsArea.value = JSON.stringify(current, null, 2);
+    } catch { /* leave textarea as-is */ }
+  });
+
+  callBtn.addEventListener("click", async () => {
+    if (!selectedTool) return;
+    let args;
+    try {
+      args = JSON.parse(argsArea.value || "{}");
+    } catch (e) {
+      showResponse({ error: "Arguments are not valid JSON: " + e.message }, false);
+      return;
+    }
+
+    if (selectedTool.name === "plan_create_block") lastOperation = args;
+
+    const result = await rpcRaw("tools/call", { name: selectedTool.name, arguments: args });
+    showResponse(result.json ?? result.error, result.ok);
+
+    if (result.ok && result.json && result.json.result && result.json.result.structuredContent) {
+      rememberFromResponse(selectedTool.name, result.json.result.structuredContent);
+    }
+  });
+
+  // --- skeleton generation from a tool's JSON Schema inputSchema ---
+
+  function buildSkeleton(tool) {
+    const schema = tool.inputSchema || {};
+    const value = valueForSchema(schema, tool.name);
+    return value;
+  }
+
+  function valueForSchema(schema, toolNameHint) {
+    if (!schema || typeof schema !== "object") return null;
+    if (schema.enum && schema.enum.length) return schema.enum[0];
+    switch (schema.type) {
+      case "string":
+        if (schema.format === "uuid") return uuid();
+        if (schema.format === "date-time") return nowPlusMinutesIso(5);
+        return "";
+      case "integer":
+      case "number":
+        return schema.minimum ?? 0;
+      case "boolean":
+        return false;
+      case "array": {
+        const item = valueForSchema(schema.items || {}, toolNameHint);
+        return item === null ? [] : [item];
+      }
+      case "object":
+      default: {
+        if (!schema.properties) return {};
+        const obj = {};
+        for (const [key, propSchema] of Object.entries(schema.properties)) {
+          obj[key] = valueForSchema(propSchema, toolNameHint);
+        }
+        applySmartDefaults(obj, toolNameHint);
+        return obj;
+      }
+    }
+  }
+
+  // Fill in values the raw JSON Schema can't express: known field names,
+  // remembered state from earlier calls (snapshot hash, controller name convention).
+  function applySmartDefaults(obj, toolNameHint) {
+    if ("projectId" in obj) obj.projectId = "test-project";
+    if ("projectContext" in obj && obj.projectContext && typeof obj.projectContext === "object") {
+      obj.projectContext.projectId = "test-project";
+      obj.projectContext.snapshotHash = lastSnapshotHash || "";
+    }
+    if ("controllerName" in obj) obj.controllerName = "";
+    if ("name" in obj && (toolNameHint === "plan_create_block" || toolNameHint === "preview_scl_block")) {
+      obj.name = "FB_ConsoleTest";
+    }
+    if ("idempotencyKey" in obj) obj.idempotencyKey = uuid();
+    if ("transaction" in obj && lastTransaction) obj.transaction = lastTransaction;
+    if ("operation" in obj && lastOperation) obj.operation = lastOperation;
+    if ("expiresAtUtc" in obj) obj.expiresAtUtc = nowPlusMinutesIso(5);
+  }
+
+  updateMemoryView();
+})();
+</script>
+</body>
+</html>

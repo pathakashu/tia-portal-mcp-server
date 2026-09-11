@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>EngineerPc.Tools.ParityVectors</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\EngineerPc.Contracts\EngineerPc.Contracts.csproj" />
+    <ProjectReference Include="..\..\src\EngineerPc.Engineering.Engine\EngineerPc.Engineering.Engine.csproj" />
+    <ProjectReference Include="..\..\src\EngineerPc.Engineering.Ir\EngineerPc.Engineering.Ir.csproj" />
+    <ProjectReference Include="..\..\src\EngineerPc.Engineering.Transactions\EngineerPc.Engineering.Transactions.csproj" />
+    <ProjectReference Include="..\..\src\EngineerPc.Engineering.Validation\EngineerPc.Engineering.Validation.csproj" />
+    <ProjectReference Include="..\..\src\EngineerPc.Tia.Mock\EngineerPc.Tia.Mock.csproj" />
+    <ProjectReference Include="..\..\src\EngineerPc.Tia.V19.Protocol\EngineerPc.Tia.V19.Protocol.csproj" />
+  </ItemGroup>
+
+</Project>
